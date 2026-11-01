@@ -1,0 +1,48 @@
+name: Conversion bug
+description: Something in the EPUB is wrong (text, layout, structure, validation)
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Privacy first:** do not attach purchased books, real PDFs, EPUBs, configs or screenshots that show a buyer stamp or other personal data.
+        If you can, reproduce the problem with a synthetic PDF (see `tests/fixtures.py`) or describe the layout in words.
+  - type: textarea
+    id: what
+    attributes:
+      label: What went wrong
+      description: What did you expect, and what did the EPUB show instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of book
+      options: [Novel / prose, Anthology, Nonfiction, Poetry, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: layout
+    attributes:
+      label: Layout details
+      description: Page size, how paragraphs are set (indents, spacing), special elements (chats, emails, footnotes, lists, artwork), which program made the PDF.
+  - type: textarea
+    id: qa
+    attributes:
+      label: QA report
+      description: Paste `book_QA.txt` (it contains counts, not book text). Remove anything personal.
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: "Output of: pdf2epub --version; python --version; pip show pymupdf | head -2"
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have not attached or pasted any copyrighted book text, PDF, EPUB or personal data.
+          required: true

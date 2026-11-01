@@ -1,0 +1,23 @@
+name: Feature request
+description: Suggest support for a new layout, book kind or option
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need?
+      description: Describe the layout or workflow pdf2epub doesn't handle yet, and how it should come out in the EPUB.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: Describe or sketch it. Use invented text only; no excerpts from real books.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have not attached or pasted any copyrighted book text, PDF, EPUB or personal data.
+          required: true

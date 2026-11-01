@@ -108,6 +108,11 @@ The companion Claude skill **pdf-to-epub** drives this toolkit:
 3. It builds and checks the EPUB, comparing rendered pages with the PDF.
 4. It hands you the EPUB and a QA report.
 
+## Community
+
+- [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Accessibility](ACCESSIBILITY.md)
+- Bugs and ideas: use the [issue forms](https://github.com/5aahil/pdf2epub-kit/issues/new/choose). Never attach real books or personal data.
+
 ## Development
 
 ```
