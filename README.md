@@ -3,7 +3,7 @@
 <p align="center"><b>Text-based PDF books → clean, validated, accessible EPUB 3 for Apple Books and Kindle.</b></p>
 <p align="center">
   <a href="https://github.com/5aahil/pdf2epub-kit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/5aahil/pdf2epub-kit/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-2f6f73">
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-2f6f73">
   <img alt="EPUB 3" src="https://img.shields.io/badge/output-EPUB%203-e0a43a">
   <img alt="MIT" src="https://img.shields.io/badge/licence-MIT-1d1b18">
   <a href="https://www.realgoodai.org/real-rating"><img alt="REAL Rating 3: Moderate AI" src="https://img.shields.io/badge/REAL%20Rating-3%20%C2%B7%20Moderate%20AI-6d665b"></a>
@@ -67,7 +67,7 @@ pdf2epub fetch-epubcheck          # needs Java to run
 pip install "pdf2epub-kit[visual] @ git+https://github.com/5aahil/pdf2epub-kit" && playwright install chromium
 ```
 
-Python 3.9+. Dependencies: PyMuPDF, PyYAML.
+Python 3.10+. Dependencies: PyMuPDF, PyYAML.
 
 ## The workflow
 
