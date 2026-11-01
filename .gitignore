@@ -42,3 +42,4 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+!plugin/.claude-plugin/icon.png
