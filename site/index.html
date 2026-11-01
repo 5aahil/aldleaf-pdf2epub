@@ -40,6 +40,9 @@ nav a:hover { color: var(--ink); }
 .hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
 .hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
 .hero img { width: 100%; height: auto; border-radius: var(--radius); }
+.real { display: inline-flex; align-items: center; gap: 12px; margin: 0 0 22px; text-decoration: none; color: var(--muted); font-size: 14px; line-height: 1.35; }
+.real img { width: 64px; height: auto; background: #fff; border-radius: 10px; }
+.real small { font-size: 12.5px; }
 .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .btn { display: inline-block; padding: 11px 18px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 15px; }
 .btn.primary { background: var(--ink); color: var(--bg); }
@@ -91,6 +94,7 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
     <div>
       <h1>Your print PDF, as an ebook that feels made for it.</h1>
       <p class="lead">pdf2epub-kit reads the layout of a text-based PDF book and builds a clean, validated EPUB 3 for Apple Books, Kindle and Kobo. It works out what each font is for, finds the chapters and reads the page numbers, then checks every letter against the PDF.</p>
+      <a class="real" href="#ai-disclosure" title="REAL Rating 3: Moderate AI"><img src="assets/real-rating-3.png" alt="REAL Rating 3 (2026): Moderate AI"><span>REAL Rating 3 · Moderate AI<br><small>AI generated building blocks under the author's direction</small></span></a>
       <div class="cta">
         <a class="btn primary" href="#install">Get started</a>
         <a class="btn ghost" href="https://github.com/5aahil/pdf2epub-kit">View on GitHub</a>
@@ -191,7 +195,17 @@ pdf2epub convert book.pdf --cover cover.jpg</pre>
     <p class="sub">Scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths.</p>
   </section>
 
-  <footer>MIT licence · <a href="https://www.realgoodai.org/real-rating">REAL Rating 3 (Moderate AI)</a>: AI generated building-block components (code, docs, illustrations) under the author's direction · <a href="https://github.com/5aahil/pdf2epub-kit">github.com/5aahil/pdf2epub-kit</a> · Sample images use invented text. Apple Books, Kindle and Kobo are trademarks of their owners; this project is not affiliated with them.</footer>
+  <section id="ai-disclosure">
+    <div class="two">
+      <div>
+        <h2>AI disclosure</h2>
+        <p class="sub">REAL Rating 3 (Moderate AI), self-assessed on <a href="https://www.realgoodai.org/real-rating">Real Good AI's REAL Rating</a> scale. AI tools generated building-block components (code, documentation and illustrations) under the author's direction. The author defined the requirements and design, tested the toolkit against real books, reported and checked the fixes, and made the final decisions.</p>
+      </div>
+      <figure style="max-width:220px"><img src="assets/real-rating-3.png" alt="REAL Rating 3 (2026): Moderate AI" style="border:0;background:#fff"></figure>
+    </div>
+  </section>
+
+  <footer>MIT licence · <a href="https://github.com/5aahil/pdf2epub-kit">github.com/5aahil/pdf2epub-kit</a> · Sample images use invented text. Apple Books, Kindle and Kobo are trademarks of their owners; this project is not affiliated with them.</footer>
 </div>
 </body>
 </html>

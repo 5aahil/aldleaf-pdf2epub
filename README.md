@@ -1,4 +1,4 @@
-<p align="center"><img src="site/assets/logo.svg" width="96" alt=""></p>
+<p align="center"><img src="site/assets/logo.svg" width="96" alt="">&nbsp;&nbsp;&nbsp;<a href="https://www.realgoodai.org/real-rating"><img src="site/assets/real-rating-3.png" width="88" alt="REAL Rating 3 (2026): Moderate AI"></a></p>
 <h1 align="center">pdf2epub-kit</h1>
 <p align="center"><b>Text-based PDF books → clean, validated, accessible EPUB 3 for Apple Books and Kindle.</b></p>
 <p align="center">
