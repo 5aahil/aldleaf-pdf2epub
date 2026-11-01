@@ -124,6 +124,18 @@ The companion Claude skill **pdf-to-epub** drives this toolkit:
 3. It builds and checks the EPUB, comparing rendered pages with the PDF.
 4. It hands you the EPUB and a QA report.
 
+The skill lives in this repo at [`plugin/skills/pdf-to-epub/SKILL.md`](plugin/skills/pdf-to-epub/SKILL.md).
+
+**Install the skill**
+
+- **Claude Code:**
+  ```
+  /plugin marketplace add 5aahil/pdf2epub-kit
+  /plugin install pdf2epub@pdf2epub-kit
+  ```
+  Then ask Claude to convert a PDF, or run `/pdf2epub:pdf-to-epub`.
+- **Claude app (web, desktop):** download [pdf-to-epub-skill.zip](https://5aahil.github.io/pdf2epub-kit/pdf-to-epub-skill.zip), then go to **Customize → Skills → + → Upload a skill** and choose the zip. Code execution must be turned on in your settings.
+
 ## Community
 
 - [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Accessibility](ACCESSIBILITY.md)

@@ -2,7 +2,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["site/**", "plugin/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,6 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Package the Claude skill
+        run: cd plugin/skills && zip -r -X ../../site/pdf-to-epub-skill.zip pdf-to-epub
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

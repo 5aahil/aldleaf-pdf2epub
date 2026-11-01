@@ -1,0 +1,10 @@
+{
+  "name": "pdf2epub",
+  "version": "0.1.0",
+  "description": "Claude skill that converts a text-based PDF book into a clean, validated EPUB 3 for Apple Books and Kindle with pdf2epub-kit.",
+  "author": { "name": "Saahil Khanna" },
+  "homepage": "https://5aahil.github.io/pdf2epub-kit/",
+  "repository": "https://github.com/5aahil/pdf2epub-kit",
+  "license": "MIT",
+  "keywords": ["epub", "pdf", "ebook", "self-publishing", "apple-books", "kindle"]
+}
