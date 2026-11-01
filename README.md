@@ -146,4 +146,4 @@ The site in [`site/`](site) deploys to GitHub Pages through `.github/workflows/p
 
 ## AI disclosure
 
-**REAL Rating 3 (Moderate AI)**, self-assessed on [Real Good AI's REAL Rating](https://www.realgoodai.org/real-rating) scale. AI tools generated building-block components (code, documentation and illustrations) under the author's direction. The author defined the requirements and design, tested the toolkit against real books, reported and checked the fixes, and made the final decisions.
+**REAL Rating 3 (Moderate AI)**, self-assessed on [Real Good AI's REAL Rating](https://www.realgoodai.org/real-rating) scale. AI assisted building-block components (code, documentation and illustrations) under the author's direction. The author defined the requirements and design, tested the toolkit against real books, reported and checked the fixes, and made the final decisions.
