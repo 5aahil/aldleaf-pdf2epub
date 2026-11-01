@@ -9,7 +9,7 @@
   <a href="https://www.realgoodai.org/real-rating"><img alt="REAL Rating 3: Moderate AI" src="https://img.shields.io/badge/REAL%20Rating-3%20%C2%B7%20Moderate%20AI-6d665b"></a>
 </p>
 <p align="center"><a href="https://www.realgoodai.org/real-rating"><img src="site/assets/real-rating-3.png" width="88" alt="REAL Rating 3 (2026): Moderate AI"></a></p>
-<p align="center"><a href="https://5aahil.github.io/pdf2epub-kit/">Project page</a> · <a href="docs/config.md">Config reference</a> · <a href="docs/privacy.md">Privacy rules</a></p>
+<p align="center"><a href="https://5aahil.github.io/pdf2epub-kit/">Project page</a> · <a href="docs/config.md">Config reference</a> · <a href="PRIVACY.md">Privacy policy</a> · <a href="docs/privacy.md">Privacy rules</a></p>
 
 <p align="center"><img src="site/assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes." width="860"></p>
 
