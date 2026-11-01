@@ -1,0 +1,44 @@
+# PRIVACY (see docs/privacy.md): nothing personal or purchased may ever be committed.
+# Shop PDFs carry a per-buyer stamp (email + purchase date) on every page, and generated
+# EPUBs, configs and reports are derived from copyrighted books. Do not weaken these rules.
+
+# Source books and generated books
+*.pdf
+*.epub
+*.azw3
+*.mobi
+*.kfx
+
+# Book configs and build reports (contain text samples from the book)
+*.pdf2epub.yaml
+*.build.json
+*_QA.txt
+
+# Covers, extracted images, QA renders
+cover.jpg
+cover.jpeg
+cover.png
+*.png
+*.jpg
+!docs/**/*.png
+!site/assets/*.png
+out/
+build/
+work/
+output/
+visual/
+ace-report/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

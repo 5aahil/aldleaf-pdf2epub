@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pdf2epub-kit: PDF books to clean EPUB 3</title>
+<meta name="description" content="Open-source toolkit that turns text-based PDF books into clean, validated, accessible EPUB 3 for Apple Books and Kindle. Reads the layout, proposes a config you confirm, builds and checks every letter.">
+<meta property="og:title" content="pdf2epub-kit">
+<meta property="og:description" content="Text-based PDF books to clean, validated EPUB 3 for Apple Books and Kindle.">
+<meta property="og:image" content="assets/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #fbf8f2; --surface: #ffffff; --ink: #1d1b18; --muted: #6d665b; --line: #e4ddd0;
+  --accent: #e0a43a; --teal: #2f6f73; --code-bg: #1b1a18; --code-ink: #e8e3da;
+  --radius: 14px; --max: 1080px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131211; --surface: #1c1b19; --ink: #ece6dc; --muted: #a59d90; --line: #2e2c28;
+    --accent: #e8b155; --teal: #5fa6aa; --code-bg: #0c0c0b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131211; --surface: #1c1b19; --ink: #ece6dc; --muted: #a59d90; --line: #2e2c28;
+  --accent: #e8b155; --teal: #5fa6aa; --code-bg: #0c0c0b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--teal); }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px; }
+header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; text-decoration: none; color: var(--ink); }
+.brand img { width: 34px; height: 34px; }
+nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 15px; }
+nav a:hover { color: var(--ink); }
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 40px 0 30px; }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
+.hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
+.hero img { width: 100%; height: auto; border-radius: var(--radius); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-block; padding: 11px 18px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 15px; }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn.ghost { border: 1.5px solid var(--line); color: var(--ink); }
+pre, code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background: var(--code-bg); color: var(--code-ink); padding: 16px 18px; border-radius: 12px; overflow-x: auto; font-size: 14.5px; line-height: 1.55; margin: 0; }
+p code, li code, td code { background: var(--line); padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
+section { padding: 46px 0; border-top: 1px solid var(--line); }
+section h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 10px; letter-spacing: -0.01em; }
+section p.sub { color: var(--muted); margin: 0 0 26px; max-width: 760px; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.step b { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #1d1b18; text-align: center; line-height: 28px; margin-bottom: 8px; }
+.step h3 { margin: 4px 0 6px; font-size: 17px; }
+.step p { margin: 0; color: var(--muted); font-size: 15px; }
+figure { margin: 0; }
+figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); display: block; }
+figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+td, th { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 14px 16px; border-radius: 10px; }
+footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+@media (max-width: 860px) {
+  .hero, .two { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  nav a { margin-left: 12px; }
+}
+@media (max-width: 480px) {
+  .steps { grid-template-columns: 1fr; }
+  nav { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#"><img src="assets/logo.svg" alt="">pdf2epub-kit</a>
+    <nav><a href="#how">How it works</a><a href="#features">Features</a><a href="#install">Install</a><a href="https://github.com/5aahil/pdf2epub-kit">GitHub</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Your print PDF, as an ebook that feels made for it.</h1>
+      <p class="lead">pdf2epub-kit reads the layout of a text-based PDF book and builds a clean, validated EPUB 3 for Apple Books, Kindle and Kobo. It works out what each font is for, finds the chapters and reads the page numbers, then checks every letter against the PDF.</p>
+      <div class="cta">
+        <a class="btn primary" href="#install">Get started</a>
+        <a class="btn ghost" href="https://github.com/5aahil/pdf2epub-kit">View on GitHub</a>
+      </div>
+    </div>
+    <img src="assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes.">
+  </div>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">One-click converters flatten a PDF into lines. pdf2epub measures it, shows you what it found, and only builds once you agree.</p>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Analyze</h3><p>Measures spacing, indents and margins, works out the role of every font@size, finds sections, bylines and page numbers.</p></div>
+      <div class="step"><b>2</b><h3>Confirm</h3><p>Everything lands in one readable config file. Fix a role, a title or the language; nothing is hidden in code.</p></div>
+      <div class="step"><b>3</b><h3>Build</h3><p>Semantic XHTML, EPUB 3 navigation, page list, NCX fallback, accessibility metadata, cover and optional fonts.</p></div>
+      <div class="step"><b>4</b><h3>Check</h3><p>EPUBCheck, every letter of every section compared with the PDF, page-marker coverage, lints and side-by-side screenshots.</p></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>From print layout to a real ebook</h2>
+    <p class="sub">Running heads, page numbers and hard line breaks are removed by position. Paragraphs split across pages are rejoined. Chats, emails and on-screen text become real, labelled text.</p>
+    <figure><img src="assets/before-after.png" alt="A PDF page with chat bubbles and an email next to the EPUB version on two phones."><figcaption>Synthetic sample book. Every word in the samples is invented filler.</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>Stamps and badges follow the reader's theme</h2>
+        <p class="sub">Grey vector artwork such as rating stamps, logos and ornaments becomes an inline SVG painted in the reader's text colour. It stays sharp, has no white box, and turns light in night mode. Kindle gets a transparent PNG fallback. Colour art stays a picture.</p>
+        <div class="note">Set <code>art: png</code> in the config to keep every piece of artwork as a picture.</div>
+      </div>
+      <figure><img src="assets/adaptive-art.png" alt="The same story opening in a day theme and a night theme; the stamp is dark on light and light on dark."></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Adapts to the book, not the other way round</h2>
+    <p class="sub">Nothing is tuned to one title. The profile is measured from each PDF and written into the config.</p>
+    <figure><img src="assets/book-kinds.png" alt="Four phones: a novel with a drop cap, an anthology story opener, nonfiction with lists and a footnote, and a poem in night mode."></figure>
+    <div class="grid" style="margin-top:18px">
+      <div class="card"><h3>Novels</h3><p>First-line indents or spaced paragraphs, justified or ragged-right, drop caps, "Chapter 1" + title headings. Layout hyphens are removed and real compounds kept.</p></div>
+      <div class="card"><h3>Anthologies</h3><p>Per-story bylines, dedications and content-warning boxes. Story authors become contributors in the metadata.</p></div>
+      <div class="card"><h3>Nonfiction</h3><p>Subheadings, bullet and numbered lists, footnotes turned into pop-up notes linked both ways.</p></div>
+      <div class="card"><h3>Poetry</h3><p>Every line break and stanza kept as set.</p></div>
+      <div class="card"><h3>Scene breaks as the author set them</h3><p>Their own printed marker or blank space, never added or removed by a rule. Prefer one ornament everywhere? <code>scene_breaks: ornament</code>.</p></div>
+      <div class="card"><h3>Print page numbers</h3><p>Every page gets a marker, including unnumbered chapter openers. Apple Books shows the print numbers, so readers can cite them.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>It checks its own work</h2>
+        <p class="sub">Each build writes a QA report. It compares letters rather than words, so drop caps and removed hyphens don't hide a missing line.</p>
+        <table>
+          <tr><th>Check</th><th>What it catches</th></tr>
+          <tr><td>EPUBCheck</td><td>Anything Apple Books or Send to Kindle would reject</td></tr>
+          <tr><td>Completeness</td><td>Lost or duplicated text, per section</td></tr>
+          <tr><td>Page markers</td><td>Print pages without a marker</td></tr>
+          <tr><td>Lints</td><td>Leftover page numbers, unjoined wraps, missed paragraph breaks</td></tr>
+          <tr><td><code>--reference</code></td><td>Structural differences from a hand-made edition (no text compared)</td></tr>
+          <tr><td><code>--visual</code></td><td>Side-by-side PDF and EPUB screenshots</td></tr>
+        </table>
+      </div>
+      <figure><img src="assets/qa-report.png" alt="Terminal output of pdf2epub convert ending with: all checks passed."></figure>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install and run</h2>
+    <p class="sub">Python 3.9+. EPUBCheck needs Java.</p>
+<pre>pip install git+https://github.com/5aahil/pdf2epub-kit
+pdf2epub fetch-epubcheck
+
+pdf2epub analyze book.pdf        # writes book.pdf2epub.yaml: review it
+pdf2epub build book.pdf          # book.epub + book_QA.txt
+# or both at once:
+pdf2epub convert book.pdf --cover cover.jpg</pre>
+    <p style="margin-top:16px">Then open the EPUB in Apple Books, or upload it at Send to Kindle. The <a href="https://github.com/5aahil/pdf2epub-kit/blob/main/docs/config.md">config reference</a> explains every option.</p>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>Works with Claude</h2>
+        <p class="sub">The companion Claude skill <code>pdf-to-epub</code> runs the whole loop with you. It analyses the PDF, checks the proposed config against rendered pages, builds and checks the EPUB, and hands over the result with a device checklist.</p>
+      </div>
+      <div>
+        <h2>Rights and privacy</h2>
+        <p class="sub">For authors and publishers converting their own books, and readers converting their own copy for their own devices. Copy-protected PDFs are refused. Buyer stamps are left out unless you pass <code>--stamp</code>. PDFs, EPUBs and configs are never committed: CI enforces it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Not in scope (yet)</h2>
+    <p class="sub">Scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths.</p>
+  </section>
+
+  <footer>MIT licence · <a href="https://github.com/5aahil/pdf2epub-kit">github.com/5aahil/pdf2epub-kit</a> · Sample images use invented text. Apple Books, Kindle and Kobo are trademarks of their owners; this project is not affiliated with them.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - run: pip install -e ".[dev]"
+      - run: pdf2epub fetch-epubcheck
+      - run: pytest -q
+  privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No personal data or books in the repository
+        run: |
+          if git ls-files | grep -Ei '\.(pdf|epub|azw3|mobi|kfx)$|\.pdf2epub\.yaml$'; then echo "book files committed"; exit 1; fi
+          if git grep -nIE "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" -- . ':!docs/privacy.md' ':!**/OFL*.txt' | grep -v "@example\.\(com\|org\)"; then
+            echo "email address found"; exit 1; fi
