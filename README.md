@@ -12,7 +12,22 @@
 
 <p align="center"><img src="site/assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes." width="860"></p>
 
-Turn a **text-based PDF book** into a clean, validated, accessible **EPUB 3** for Apple Books, Kindle (Send to Kindle), Kobo and other readers. It's built for authors and small publishers who have a print-ready PDF but no EPUB.
+Turn a **text-based PDF book** into a clean, validated, accessible **EPUB 3**, ready to publish wherever you choose.
+
+## Who it's for
+
+**Authors, writers and publishers who self-publish**, and who have a print-ready PDF but no proper ebook:
+
+- **Self-publishing authors and writers:** you laid out your book for print (InDesign, Affinity, Word, Vellum, Scribus, LaTeX) and want an ebook without paying for a conversion or retyping it.
+- **Small and independent publishers and presses:** turn your back catalogue and new print files into consistent, accessible EPUBs.
+- **Anthology, magazine and competition organisers:** collections with many authors, bylines, dedications and content warnings.
+- **Editors and book designers** who hand over both print and ebook files.
+
+**Publish on any platform you want.** The output is a standard, validated EPUB 3, the format the main ebook stores and distributors accept: Amazon KDP, Apple Books, Kobo Writing Life, Google Play Books, Barnes & Noble Press, aggregators such as Draft2Digital, or direct sales from your own website or shop. Check each store's current upload requirements before you publish.
+
+**Readers** can also use it on their own DRM-free copy of a book, for their own devices.
+
+It is **not** for converting or sharing books you don't have the rights to. Copy-protected PDFs are refused.
 
 One-click converters flatten a PDF into lines of text. pdf2epub instead **reads the layout**:
 
