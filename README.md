@@ -6,6 +6,7 @@
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-2f6f73">
   <img alt="EPUB 3" src="https://img.shields.io/badge/output-EPUB%203-e0a43a">
   <img alt="MIT" src="https://img.shields.io/badge/licence-MIT-1d1b18">
+  <a href="https://www.realgoodai.org/real-rating"><img alt="REAL Rating 3: Moderate AI" src="https://img.shields.io/badge/REAL%20Rating-3%20%C2%B7%20Moderate%20AI-6d665b"></a>
 </p>
 <p align="center"><a href="https://5aahil.github.io/pdf2epub-kit/">Project page</a> · <a href="docs/config.md">Config reference</a> · <a href="docs/privacy.md">Privacy rules</a></p>
 
@@ -121,3 +122,7 @@ MIT licence.
 ## Project page
 
 The site in [`site/`](site) deploys to GitHub Pages through `.github/workflows/pages.yml`. To switch it on, go to **Settings → Pages → Source** and choose **GitHub Actions**. All sample images come from the synthetic test books, so every word in them is invented.
+
+## AI disclosure
+
+**REAL Rating 3 (Moderate AI)**, self-assessed on [Real Good AI's REAL Rating](https://www.realgoodai.org/real-rating) scale. AI tools generated building-block components (code, documentation and illustrations) under the author's direction. The author defined the requirements and design, tested the toolkit against real books, reported and checked the fixes, and made the final decisions.
