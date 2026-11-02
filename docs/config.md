@@ -1,6 +1,6 @@
-# The book config (`*.pdf2epub.yaml`)
+# The book config (`*.aldleaf.yaml`)
 
-`pdf2epub analyze` writes this file. Everything in it is a proposal: edit it, then run `pdf2epub build`. The file contains short text samples from your PDF, so keep it out of public repositories (`.gitignore` already excludes `*.pdf2epub.yaml`).
+`aldleaf analyze` writes this file. Everything in it is a proposal: edit it, then run `aldleaf build`. The file contains short text samples from your PDF, so keep it out of public repositories (`.gitignore` already excludes `*.aldleaf.yaml`).
 
 ## metadata
 
@@ -30,7 +30,7 @@
 
 ### Embedding fonts
 
-pdf2epub never copies fonts out of the PDF, because subset fonts in a PDF are licensed for that PDF only. To use the print fonts, point to font files you are licensed to embed (for example the SIL Open Font License fonts from Google Fonts):
+Aldleaf never copies fonts out of the PDF, because subset fonts in a PDF are licensed for that PDF only. To use the print fonts, point to font files you are licensed to embed (for example the SIL Open Font License fonts from Google Fonts):
 
 ```yaml
 fonts:

@@ -1,17 +1,19 @@
 {
-  "name": "pdf2epub-kit",
-  "owner": { "name": "Saahil Khanna" },
+  "name": "aldleaf",
+  "owner": {
+    "name": "Saahil Khanna"
+  },
   "metadata": {
-    "description": "Claude skill for pdf2epub-kit: text-based PDF books to clean, validated EPUB 3."
+    "description": "Claude skill for Aldleaf (earlier pdf2epub-kit): text-based PDF books to clean, validated EPUB 3."
   },
   "plugins": [
     {
-      "name": "pdf2epub",
+      "name": "aldleaf",
       "source": "./plugin",
-      "description": "Convert a text-based PDF book into a clean, validated EPUB 3 for Apple Books and Kindle: analyze, confirm, build, check, deliver.",
-      "version": "0.1.0",
+      "description": "Aldleaf: every printed leaf, rewritten as EPUB. Convert a text-based PDF book into a clean, validated EPUB 3 (PDF to EPUB): analyze, confirm, build, check, deliver.",
+      "version": "0.2.0",
       "license": "MIT",
-      "homepage": "https://5aahil.github.io/pdf2epub-kit/",
+      "homepage": "https://5aahil.github.io/aldleaf-pdf2epub/",
       "category": "productivity"
     }
   ]

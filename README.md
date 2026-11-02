@@ -1,19 +1,23 @@
 <p align="center"><img src="site/assets/logo.svg" width="96" alt=""></p>
-<h1 align="center">pdf2epub-kit</h1>
-<p align="center"><b>Text-based PDF books → clean, validated, accessible EPUB 3 for Apple Books and Kindle.</b></p>
+<h1 align="center">Aldleaf</h1>
+<p align="center"><b>Every printed leaf, rewritten as EPUB.</b><br>A free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors: text-based PDF books → clean, validated, accessible EPUB 3.</p>
 <p align="center">
-  <a href="https://github.com/5aahil/pdf2epub-kit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/5aahil/pdf2epub-kit/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/5aahil/aldleaf-pdf2epub/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/5aahil/aldleaf-pdf2epub/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-2f6f73">
   <img alt="EPUB 3" src="https://img.shields.io/badge/output-EPUB%203-e0a43a">
   <img alt="MIT" src="https://img.shields.io/badge/licence-MIT-1d1b18">
   <a href="https://www.realgoodai.org/real-rating"><img alt="REAL Rating 3: Moderate AI" src="https://img.shields.io/badge/REAL%20Rating-3%20%C2%B7%20Moderate%20AI-6d665b"></a>
 </p>
 <p align="center"><a href="https://www.realgoodai.org/real-rating"><img src="site/assets/real-rating-3.png" width="88" alt="REAL Rating 3 (2026): Moderate AI"></a></p>
-<p align="center"><a href="https://5aahil.github.io/pdf2epub-kit/">Project page</a> · <a href="docs/config.md">Config reference</a> · <a href="PRIVACY.md">Privacy policy</a> · <a href="docs/privacy.md">Privacy rules</a></p>
+<p align="center"><a href="https://5aahil.github.io/aldleaf-pdf2epub/">Project page</a> · <a href="docs/config.md">Config reference</a> · <a href="PRIVACY.md">Privacy policy</a> · <a href="docs/privacy.md">Privacy rules</a></p>
 
 <p align="center"><img src="site/assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes." width="860"></p>
 
 Turn a **text-based PDF book** into a clean, validated, accessible **EPUB 3**, ready to publish wherever you choose.
+
+> **Start from a PDF.** Aldleaf reads **PDF files only** for now. If your book is in Word, Pages, Google Docs, Scrivener or another editor, first export your **final, edited, print-ready version as a PDF** (for example File → Save As → PDF), then convert that PDF.
+
+> **About the name:** *Aldleaf* (say "ALD-leaf"; earlier **pdf2epub-kit**) is named after the **Aldine leaf ❦**, the printer's leaf ornament of Aldus Manutius, the Renaissance printer who gave us the pocket book and italic type. Printers used it to mark a new section, much like the scene breaks Aldleaf keeps from your print edition. The leaf in the logo is the ❦ from [Noto Sans Symbols 2](https://github.com/notofonts/symbols) (SIL Open Font License 1.1).
 
 ## Who it's for
 
@@ -30,7 +34,7 @@ Turn a **text-based PDF book** into a clean, validated, accessible **EPUB 3**, r
 
 It is **not** for converting or sharing books you don't have the rights to. Copy-protected PDFs are refused.
 
-One-click converters flatten a PDF into lines of text. pdf2epub instead **reads the layout**:
+One-click converters flatten a PDF into lines of text. Aldleaf instead **reads the layout**:
 
 - **Fonts, sizes and positions:** it works out what each font is used for (body text, headings, chat messages, emails, on-screen text, footnotes, captions).
 - **Book structure:** it finds where chapters start and reads the printed page numbers.
@@ -38,12 +42,12 @@ One-click converters flatten a PDF into lines of text. pdf2epub instead **reads 
 - **Self-check:** after the build it checks its own work.
 
 ```
-pdf2epub analyze book.pdf      # propose a book config (book.pdf2epub.yaml)
+aldleaf analyze book.pdf      # propose a book config (book.aldleaf.yaml)
                                # -> review / edit the config
-pdf2epub build book.pdf        # build book.epub and check it
+aldleaf build book.pdf        # build book.epub and check it
 ```
 
-or in one go: `pdf2epub convert book.pdf`.
+or in one go: `aldleaf convert book.pdf`.
 
 ![A PDF page with chats and an email, and the EPUB version on two phones](site/assets/before-after.png)
 
@@ -70,6 +74,7 @@ or in one go: `pdf2epub convert book.pdf`.
 ![The same opener in day and night themes; the stamp adapts](site/assets/adaptive-art.png)
 
 **Not supported:**
+- Word (.docx), Pages, Google Docs and other editor files: export your final print-ready version as a PDF first.
 - Scanned PDFs (no text layer): these are detected and refused.
 - Complex textbook layouts (multi-column body text, big tables, maths).
 - Copy-protected PDFs: these are refused (see [Rights](#rights-and-privacy)).
@@ -77,10 +82,10 @@ or in one go: `pdf2epub convert book.pdf`.
 ## Install
 
 ```
-pip install git+https://github.com/5aahil/pdf2epub-kit
+pip install git+https://github.com/5aahil/aldleaf-pdf2epub
 # optional: validation and visual reports
-pdf2epub fetch-epubcheck          # needs Java to run
-pip install "pdf2epub-kit[visual] @ git+https://github.com/5aahil/pdf2epub-kit" && playwright install chromium
+aldleaf fetch-epubcheck          # needs Java to run
+pip install "aldleaf[visual] @ git+https://github.com/5aahil/aldleaf-pdf2epub" && playwright install chromium
 ```
 
 Python 3.10+. Dependencies: PyMuPDF, PyYAML.
@@ -90,14 +95,14 @@ Python 3.10+. Dependencies: PyMuPDF, PyYAML.
 ![QA report ending in all checks passed](site/assets/qa-report.png)
 
 
-1. **Analyse.** `pdf2epub analyze book.pdf` prints a summary and writes `book.pdf2epub.yaml`:
+1. **Analyse.** `aldleaf analyze book.pdf` prints a summary and writes `book.aldleaf.yaml`:
    - **metadata:** title, authors, publisher, year and ISBN, read from the title and copyright pages.
    - **profile:** book kind, paragraph style, alignment and hyphenation.
    - **geometry:** leading, paragraph gap, indent and text width, all measured from the PDF.
    - **styles:** every font@size with a guessed role and a short sample.
    - **sections:** title page, copyright, contents (rebuilt as links), chapters with authors, front and back matter.
 2. **Confirm.** Fix anything the guesses got wrong: a role, a section title, an author, the language. See [docs/config.md](docs/config.md).
-3. **Build.** `pdf2epub build book.pdf` writes `book.epub`, `book_QA.txt` and `book.build.json`.
+3. **Build.** `aldleaf build book.pdf` writes `book.epub`, `book_QA.txt` and `book.build.json`.
 4. **Check.** The build runs the checks automatically:
    - EPUBCheck, if installed.
    - Text completeness: every letter of every section is compared with the PDF.
@@ -111,9 +116,10 @@ Python 3.10+. Dependencies: PyMuPDF, PyYAML.
 
 ## Rights and privacy
 
-- Use pdf2epub on books you wrote or publish, or on your own copy of a book for your own devices. Don't share EPUBs of other people's books.
-- **Copy protection:** encrypted or password-protected PDFs are refused. pdf2epub never removes copy protection.
-- **Buyer stamps:** many shop PDFs stamp the buyer's email on every page. pdf2epub detects the stamp and leaves it out. With `--stamp` it adds one "Licensed to …" line to the copyright page instead. Either way, the PDF and the EPUB contain personal data: never commit them. See [docs/privacy.md](docs/privacy.md).
+- **No data collection:** Aldleaf has no accounts, analytics or server. Your files stay on your computer. See the [privacy policy](PRIVACY.md).
+- Use Aldleaf on books you wrote or publish, or on your own copy of a book for your own devices. Don't share EPUBs of other people's books.
+- **Copy protection:** encrypted or password-protected PDFs are refused. Aldleaf never removes copy protection.
+- **Buyer stamps:** many shop PDFs stamp the buyer's email on every page. Aldleaf detects the stamp and leaves it out. With `--stamp` it adds one "Licensed to …" line to the copyright page instead. Either way, the PDF and the EPUB contain personal data: never commit them. See [docs/privacy.md](docs/privacy.md).
 
 ## Using it with Claude
 
@@ -130,16 +136,16 @@ The skill lives in this repo at [`plugin/skills/pdf-to-epub/SKILL.md`](plugin/sk
 
 - **Claude Code:**
   ```
-  /plugin marketplace add 5aahil/pdf2epub-kit
-  /plugin install pdf2epub@pdf2epub-kit
+  /plugin marketplace add 5aahil/aldleaf-pdf2epub
+  /plugin install aldleaf@aldleaf
   ```
-  Then ask Claude to convert a PDF, or run `/pdf2epub:pdf-to-epub`.
-- **Claude app (web, desktop):** download [pdf-to-epub-skill.zip](https://5aahil.github.io/pdf2epub-kit/pdf-to-epub-skill.zip), then go to **Customize → Skills → + → Upload a skill** and choose the zip. Code execution must be turned on in your settings.
+  Then ask Claude to convert a PDF, or run `/aldleaf:pdf-to-epub`.
+- **Claude app (web, desktop):** download [pdf-to-epub-skill.zip](https://5aahil.github.io/aldleaf-pdf2epub/pdf-to-epub-skill.zip), then go to **Customize → Skills → + → Upload a skill** and choose the zip. Code execution must be turned on in your settings.
 
 ## Community
 
 - [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Accessibility](ACCESSIBILITY.md)
-- Bugs and ideas: use the [issue forms](https://github.com/5aahil/pdf2epub-kit/issues/new/choose). Never attach real books or personal data.
+- Bugs and ideas: use the [issue forms](https://github.com/5aahil/aldleaf-pdf2epub/issues/new/choose). Never attach real books or personal data.
 
 ## Development
 

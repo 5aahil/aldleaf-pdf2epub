@@ -257,7 +257,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     first_body_href = first_body_href or next((f["href"] for f in files if f.get("toc")), "text/contents.xhtml")
 
     # ---- nav / ncx / opf
-    book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, "pdf2epub:" + meta["title"] + "|" + ",".join(meta.get("authors") or [])))
+    book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, "aldleaf:" + meta["title"] + "|" + ",".join(meta.get("authors") or [])))
     nav_toc = "".join(
         f'<li><a href="{f["href"]}">{esc(f["toc"])}{(", by " + esc(f["author"])) if f.get("author") else ""}</a></li>'
         for f in files if f.get("toc"))
@@ -369,7 +369,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
 {'<meta property="ibooks:specified-fonts">true</meta>' if font_items else ""}
 {a11y}
 <meta name="cover" content="cover-image"/>
-<meta name="generator" content="pdf2epub-kit {__version__}"/>
+<meta name="generator" content="Aldleaf {__version__}"/>
 </metadata>
 <manifest>
 {chr(10).join(manifest)}

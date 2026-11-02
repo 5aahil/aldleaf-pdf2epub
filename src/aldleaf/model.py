@@ -153,7 +153,7 @@ def load(pdf_path):
     doc = pymupdf.open(pdf_path)
     if doc.needs_pass or doc.is_encrypted:
         raise PermissionError(
-            "This PDF is encrypted or password-protected. pdf2epub does not remove copy "
+            "This PDF is encrypted or password-protected. Aldleaf does not remove copy "
             "protection. Use an unprotected copy you have the rights to.")
     pages = []
     tiny_texts = {}

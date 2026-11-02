@@ -6,7 +6,7 @@ body:
     id: need
     attributes:
       label: What do you need?
-      description: Describe the layout or workflow pdf2epub doesn't handle yet, and how it should come out in the EPUB.
+      description: Describe the layout or workflow Aldleaf doesn't handle yet, and how it should come out in the EPUB.
     validations:
       required: true
   - type: textarea

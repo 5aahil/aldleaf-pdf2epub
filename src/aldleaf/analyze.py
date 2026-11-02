@@ -488,7 +488,7 @@ def analyze(doc, pages, stamp=None):
         for l in pg.lines:
             chars[l.key] += len(l.text.strip())
     if not chars:
-        raise ValueError("No text found. This looks like a scanned PDF; pdf2epub needs a text-based PDF.")
+        raise ValueError("No text found. This looks like a scanned PDF; Aldleaf needs a text-based PDF.")
     body_key = chars.most_common(1)[0][0]
     geo = detect_geometry(pages, body_key)
     geo["body_size"] = float(body_key.split("@")[1])
@@ -520,7 +520,7 @@ def analyze(doc, pages, stamp=None):
         if common[1] >= len(section_authors) * 0.6:
             author = common[0]
     config = {
-        "pdf2epub": 1,
+        "aldleaf": 1,
         "metadata": {
             "title": title_hint or "Untitled",
             "subtitle": "",

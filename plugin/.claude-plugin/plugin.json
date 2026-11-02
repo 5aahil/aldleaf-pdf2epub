@@ -1,22 +1,25 @@
 {
-  "name": "pdf2epub",
-  "displayName": "pdf2epub",
-  "version": "0.1.0",
-  "description": "Claude skill that converts a text-based PDF book into a clean, validated EPUB 3 for Apple Books and Kindle with pdf2epub-kit.",
+  "name": "aldleaf",
+  "displayName": "Aldleaf",
+  "version": "0.2.0",
+  "description": "Aldleaf: every printed leaf, rewritten as EPUB. Claude skill that converts a text-based PDF book into a clean, validated EPUB 3 (PDF to EPUB, pdf2epub) for self-publishing authors, writers and publishers.",
   "author": {
     "name": "Saahil Khanna"
   },
-  "homepage": "https://5aahil.github.io/pdf2epub-kit/",
-  "repository": "https://github.com/5aahil/pdf2epub-kit",
+  "homepage": "https://5aahil.github.io/aldleaf-pdf2epub/",
+  "repository": "https://github.com/5aahil/aldleaf-pdf2epub",
   "license": "MIT",
   "keywords": [
+    "pdf2epub",
+    "pdf-to-epub",
     "epub",
+    "epub3",
     "pdf",
     "ebook",
     "self-publishing",
     "apple-books",
     "kindle"
   ],
-  "termsOfServiceUrl": "https://github.com/5aahil/pdf2epub-kit/blob/main/LICENSE",
-  "privacyPolicyUrl": "https://github.com/5aahil/pdf2epub-kit/blob/main/PRIVACY.md"
+  "termsOfServiceUrl": "https://github.com/5aahil/aldleaf-pdf2epub/blob/main/LICENSE",
+  "privacyPolicyUrl": "https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md"
 }

@@ -3,26 +3,31 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pdf2epub-kit"
-version = "0.1.0"
-description = "Turn text-based PDF books into clean, validated, accessible EPUB 3 for Apple Books and Kindle."
+name = "aldleaf"
+version = "0.2.0"
+description = "Aldleaf (earlier pdf2epub-kit): every printed leaf, rewritten as EPUB. Turns text-based PDF books into clean, validated, accessible EPUB 3."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = ["pymupdf>=1.23", "pyyaml>=6"]
-keywords = ["epub", "pdf", "ebook", "kindle", "apple books", "self-publishing"]
+keywords = ["pdf2epub", "pdf to epub", "epub", "epub3", "pdf", "ebook", "kindle", "apple books", "self-publishing"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
   "Topic :: Text Processing :: Markup",
 ]
 
+[project.urls]
+Homepage = "https://5aahil.github.io/aldleaf-pdf2epub/"
+Repository = "https://github.com/5aahil/aldleaf-pdf2epub"
+Issues = "https://github.com/5aahil/aldleaf-pdf2epub/issues"
+
 [project.optional-dependencies]
 visual = ["playwright>=1.40"]
 dev = ["pytest>=7"]
 
 [project.scripts]
-pdf2epub = "pdf2epub.cli:main"
+aldleaf = "aldleaf.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

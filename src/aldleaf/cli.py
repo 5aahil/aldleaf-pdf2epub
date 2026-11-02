@@ -1,4 +1,4 @@
-"""Command line: pdf2epub analyze | build | check | convert | fetch-epubcheck"""
+"""Command line: aldleaf analyze | build | check | convert | fetch-epubcheck"""
 import argparse
 import json
 import os
@@ -12,7 +12,7 @@ from .build import build
 from .check import check, fetch_epubcheck
 from .model import load
 
-HEADER = """# pdf2epub book config. Review it, fix anything wrong, then run `pdf2epub build`.
+HEADER = """# Aldleaf book config. Review it, fix anything wrong, then run `aldleaf build`.
 # It contains short text samples from your PDF: keep it out of public repositories.
 # Roles: body heading subheading note screen chat chat_label email blockquote scene_break caption ignore
 # Section types: titlepage copyright toc chapter   (epub_type: chapter foreword preface introduction
@@ -21,7 +21,9 @@ HEADER = """# pdf2epub book config. Review it, fix anything wrong, then run `pdf
 
 
 def _default_config_path(pdf):
-    return os.path.splitext(pdf)[0] + ".pdf2epub.yaml"
+    path = os.path.splitext(pdf)[0] + ".aldleaf.yaml"
+    old = os.path.splitext(pdf)[0] + ".pdf2epub.yaml"   # configs written before the rename (0.1.x)
+    return old if not os.path.exists(path) and os.path.exists(old) else path
 
 
 def _default_epub_path(pdf):
@@ -36,7 +38,7 @@ def cmd_analyze(a):
         fh.write(HEADER)
         yaml.safe_dump(cfg, fh, sort_keys=False, allow_unicode=True, width=110)
     print(summarize(cfg))
-    print(f"\nWrote {out}. Review it, then: pdf2epub build {a.pdf!r} -c {out!r}")
+    print(f"\nWrote {out}. Review it, then: aldleaf build {a.pdf!r} -c {out!r}")
     return 0
 
 
@@ -48,7 +50,7 @@ def _load_cfg(path):
 def cmd_build(a, then_check=True):
     cfg_path = a.config or _default_config_path(a.pdf)
     if not os.path.exists(cfg_path):
-        print(f"No config at {cfg_path}. Run `pdf2epub analyze` first (or `pdf2epub convert`).")
+        print(f"No config at {cfg_path}. Run `aldleaf analyze` first (or `aldleaf convert`).")
         return 2
     cfg = _load_cfg(cfg_path)
     if a.cover:
@@ -102,13 +104,13 @@ def cmd_fetch(_a):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="pdf2epub", description="Turn text-based PDF books into clean EPUB 3.")
-    p.add_argument("--version", action="version", version=f"pdf2epub-kit {__version__}")
+    p = argparse.ArgumentParser(prog="aldleaf", description="Turn text-based PDF books into clean EPUB 3.")
+    p.add_argument("--version", action="version", version=f"aldleaf {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("analyze", help="propose a book config (style map, sections, page numbers)")
     s.add_argument("pdf")
-    s.add_argument("-o", "--output", help="config path (default: <pdf>.pdf2epub.yaml)")
+    s.add_argument("-o", "--output", help="config path (default: <pdf>.aldleaf.yaml)")
     s.set_defaults(func=cmd_analyze)
 
     for name, fn, hlp in (("build", cmd_build, "build the EPUB from the PDF and a config, then check it"),

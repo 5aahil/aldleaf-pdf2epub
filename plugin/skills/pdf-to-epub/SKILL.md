@@ -1,13 +1,13 @@
 ---
 name: "pdf-to-epub"
-description: "Convert a text-based PDF book into a clean, validated EPUB 3 for Apple Books and Kindle with pdf2epub-kit: analyze, confirm the style map, build, check, deliver."
+description: "Convert a text-based PDF book into a clean, validated EPUB 3 (PDF to EPUB) for Apple Books, Kindle and any ebook store with Aldleaf (earlier pdf2epub-kit): analyze, confirm the style map, build, check, deliver."
 ---
 
-# PDF to EPUB (pdf2epub-kit)
+# PDF to EPUB (Aldleaf)
 
 Use this when someone wants a proper EPUB (Apple Books, Kindle via Send to Kindle, Kobo) from a PDF book, or wants an existing conversion checked.
 
-The toolkit lives at https://github.com/5aahil/pdf2epub-kit (MIT). It reads the PDF's layout (fonts, sizes, positions, drawn shapes) instead of flattening text. It proposes a book config, which the user confirms, and then it builds and checks the EPUB.
+The toolkit lives at https://github.com/5aahil/aldleaf-pdf2epub (MIT). It reads the PDF's layout (fonts, sizes, positions, drawn shapes) instead of flattening text. It proposes a book config, which the user confirms, and then it builds and checks the EPUB.
 
 ## 0. Rights and privacy first (always)
 
@@ -17,23 +17,24 @@ The toolkit lives at https://github.com/5aahil/pdf2epub-kit (MIT). It reads the 
 - **Copy protection:** if the PDF is encrypted or password-protected, stop. The toolkit refuses it and you must not try to remove protection. Suggest asking the seller for an unprotected copy.
 - **Buyer stamps:** shop PDFs often carry a buyer stamp (email and purchase date) on every page.
   - The toolkit detects the stamp and leaves it out by default. `--stamp` adds one "Licensed to ..." line on the copyright page, but only if the user asks.
-  - Treat PDFs, EPUBs, `*.pdf2epub.yaml` configs, build reports and screenshots as personal or copyrighted data. Never commit them to a repo, never publish them as an artifact, never paste the stamp anywhere.
+  - Treat PDFs, EPUBs, `*.aldleaf.yaml` configs, build reports and screenshots as personal or copyrighted data. Never commit them to a repo, never publish them as an artifact, never paste the stamp anywhere.
 - **Scanned PDFs (no text layer):** these aren't supported. Say so plainly; OCR is out of scope.
+- **Word, Pages, Google Docs or other editor files:** Aldleaf reads PDFs only for now. Ask the user to export their final, edited, print-ready version as a PDF (File → Save As → PDF, or Export → PDF) and work from that PDF.
 
 ## 1. Install
 
 ```
-pip install git+https://github.com/5aahil/pdf2epub-kit   # needs Python 3.10+
-pdf2epub fetch-epubcheck                                  # validator; needs Java (java -version)
+pip install git+https://github.com/5aahil/aldleaf-pdf2epub   # needs Python 3.10+
+aldleaf fetch-epubcheck                                  # validator; needs Java (java -version)
 ```
 
-- If GitHub isn't reachable, ask the user to attach the pdf2epub-kit zip and run `pip install ./pdf2epub-kit`.
+- If GitHub isn't reachable, ask the user to attach the aldleaf-pdf2epub zip and run `pip install ./aldleaf-pdf2epub`.
 - Optional, for visual reports: `pip install playwright` (use an existing Chromium if one is installed).
 - Work on a copy of the PDF in its own folder.
 
 ## 2. Analyse
 
-`pdf2epub analyze book.pdf` prints a summary and writes `book.pdf2epub.yaml`. Then verify the guesses against the PDF itself, never from the summary alone:
+`aldleaf analyze book.pdf` prints a summary and writes `book.aldleaf.yaml`. Then verify the guesses against the PDF itself, never from the summary alone:
 
 - **Look at the pages.** Render key pages with PyMuPDF (`page.get_pixmap(dpi=70)`) and view them:
   - the first page of every detected section;
@@ -60,7 +61,7 @@ Show the user a short summary of what you found and what you changed. Ask only a
 ## 3. Build and check
 
 ```
-pdf2epub build book.pdf -c book.pdf2epub.yaml [--cover cover.jpg] [--visual qa_visual] [--reference their.epub]
+aldleaf build book.pdf -c book.aldleaf.yaml [--cover cover.jpg] [--visual qa_visual] [--reference their.epub]
 ```
 
 The build writes `book.epub`, `book_QA.txt` and `book.build.json`, and runs the checks:

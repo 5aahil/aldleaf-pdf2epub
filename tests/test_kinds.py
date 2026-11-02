@@ -5,9 +5,9 @@ import zipfile
 import pytest
 
 import fixtures
-from pdf2epub.analyze import analyze
-from pdf2epub.build import build
-from pdf2epub.model import load
+from aldleaf.analyze import analyze
+from aldleaf.build import build
+from aldleaf.model import load
 
 
 def run(tmp_path, maker):

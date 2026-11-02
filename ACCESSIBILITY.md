@@ -1,8 +1,8 @@
 # Accessibility
 
-## The EPUBs pdf2epub makes
+## The EPUBs Aldleaf makes
 
-Accessible ebooks are a core goal, not an extra. Every EPUB pdf2epub builds has:
+Accessible ebooks are a core goal, not an extra. Every EPUB Aldleaf builds has:
 
 - a real structure: headings, sections with `epub:type` and DPUB-ARIA roles, a linked contents page and landmarks;
 - print page markers and a page list, so readers using assistive technology can follow page references;
@@ -18,4 +18,4 @@ The documentation and the project page use plain language, real headings, alt te
 
 ## Reporting barriers
 
-If something in an EPUB, the docs or the project page is hard to use with your setup, please [open an accessibility issue](https://github.com/5aahil/pdf2epub-kit/issues/new?template=accessibility.yml). Accessibility problems are treated as bugs.
+If something in an EPUB, the docs or the project page is hard to use with your setup, please [open an accessibility issue](https://github.com/5aahil/aldleaf-pdf2epub/issues/new?template=accessibility.yml). Accessibility problems are treated as bugs.

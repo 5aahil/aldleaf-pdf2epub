@@ -3,11 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pdf2epub-kit: PDF books to clean EPUB 3</title>
-<meta name="description" content="Open-source toolkit for self-publishing authors, writers and publishers: turns text-based PDF books into clean, validated, accessible EPUB 3 for any ebook platform. Reads the layout, proposes a config you confirm, builds and checks every letter.">
-<meta property="og:title" content="pdf2epub-kit">
-<meta property="og:description" content="Text-based PDF books to clean, validated EPUB 3 for Apple Books and Kindle.">
-<meta property="og:image" content="assets/social-preview.png">
+<title>Aldleaf: PDF to EPUB converter (pdf2epub) for self-publishing authors</title>
+<meta name="description" content="Aldleaf is a free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors, writers and publishers. It reads the layout of a text-based PDF book and builds a clean, validated, accessible EPUB 3 for Kindle, Apple Books, Kobo and any ebook platform.">
+<link rel="canonical" href="https://5aahil.github.io/aldleaf-pdf2epub/">
+<meta property="og:title" content="Aldleaf: every printed leaf, rewritten as EPUB">
+<meta property="og:url" content="https://5aahil.github.io/aldleaf-pdf2epub/">
+<meta property="og:type" content="website">
+<meta property="og:description" content="Free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors: text-based PDF books to clean, validated EPUB 3.">
+<meta property="og:image" content="https://5aahil.github.io/aldleaf-pdf2epub/assets/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <style>
@@ -40,6 +43,7 @@ nav a:hover { color: var(--ink); }
 .hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
 .hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
 .hero img { width: 100%; height: auto; border-radius: var(--radius); }
+.kicker { margin: 0 0 8px; color: var(--teal); font-weight: 600; letter-spacing: 0.02em; }
 .real { display: inline-flex; align-items: center; gap: 12px; margin: 0 0 22px; text-decoration: none; color: var(--muted); font-size: 14px; line-height: 1.35; }
 .real img { width: 64px; height: auto; background: #fff; border-radius: 10px; }
 .real small { font-size: 12.5px; }
@@ -66,6 +70,7 @@ figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
 .card h3 { margin: 0 0 6px; font-size: 17px; }
 .card p { margin: 0; color: var(--muted); font-size: 15px; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.two > * { min-width: 0; }
 table { width: 100%; border-collapse: collapse; font-size: 15px; }
 td, th { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { color: var(--muted); font-weight: 600; }
@@ -82,22 +87,53 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
   nav { display: none; }
 }
 </style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Aldleaf",
+ "alternateName": [
+  "Aldleaf PDF to EPUB",
+  "pdf2epub-kit",
+  "pdf2epub"
+ ],
+ "description": "Aldleaf is a free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors, writers and publishers. It reads the layout of a text-based PDF book and builds a clean, validated, accessible EPUB 3 for Kindle, Apple Books, Kobo and any ebook platform.",
+ "applicationCategory": "DeveloperApplication",
+ "operatingSystem": "Windows, macOS, Linux",
+ "url": "https://5aahil.github.io/aldleaf-pdf2epub/",
+ "codeRepository": "https://github.com/5aahil/aldleaf-pdf2epub",
+ "license": "https://opensource.org/licenses/MIT",
+ "softwareVersion": "0.2.0",
+ "author": {
+  "@type": "Person",
+  "name": "Saahil Khanna",
+  "url": "https://github.com/5aahil"
+ },
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "EUR"
+ },
+ "keywords": "PDF to EPUB, pdf2epub, EPUB 3, ebook converter, self-publishing, Kindle, Apple Books"
+}
+</script>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="brand" href="#"><img src="assets/logo.svg" alt="">pdf2epub-kit</a>
-    <nav><a href="#who">Who it's for</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#install">Install</a><a href="https://github.com/5aahil/pdf2epub-kit">GitHub</a></nav>
+    <a class="brand" href="#"><img src="assets/logo.svg" alt="">Aldleaf</a>
+    <nav><a href="#who">Who it's for</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#install">Install</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a></nav>
   </header>
 
   <div class="hero">
     <div>
-      <h1>Your print PDF, as an ebook that feels made for it.</h1>
-      <p class="lead"><b>For authors, writers and publishers who self-publish.</b> pdf2epub-kit reads the layout of your text-based PDF book and builds a clean, validated EPUB 3 you can publish on any platform you choose. It works out what each font is for, finds the chapters and reads the page numbers, then checks every letter against the PDF.</p>
+      <p class="kicker">Aldleaf · PDF to EPUB, done properly</p>
+      <h1>Every printed leaf, rewritten as EPUB.</h1>
+      <p class="lead"><b>For authors, writers and publishers who self-publish.</b> Aldleaf is a free, open-source <b>PDF to EPUB converter</b>. It reads the layout of your text-based PDF book and builds a clean, validated EPUB 3 you can publish on any platform you choose. It works out what each font is for, finds the chapters and reads the page numbers, then checks every letter against the PDF. Writing in Word or another editor? Export your final print-ready version as a PDF first.</p>
       <a class="real" href="#ai-disclosure" title="REAL Rating 3: Moderate AI"><img src="assets/real-rating-3.png" alt="REAL Rating 3 (2026): Moderate AI"><span>REAL Rating 3 · Moderate AI<br><small>AI assisted building blocks under the author's direction</small></span></a>
       <div class="cta">
         <a class="btn primary" href="#install">Get started</a>
-        <a class="btn ghost" href="https://github.com/5aahil/pdf2epub-kit">View on GitHub</a>
+        <a class="btn ghost" href="https://github.com/5aahil/aldleaf-pdf2epub">View on GitHub</a>
       </div>
     </div>
     <img src="assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes.">
@@ -117,7 +153,7 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
 
   <section id="how">
     <h2>How it works</h2>
-    <p class="sub">One-click converters flatten a PDF into lines. pdf2epub measures it, shows you what it found, and only builds once you agree.</p>
+    <p class="sub">One-click converters flatten a PDF into lines. Aldleaf measures it, shows you what it found, and only builds once you agree.</p>
     <div class="steps">
       <div class="step"><b>1</b><h3>Analyze</h3><p>Measures spacing, indents and margins, works out the role of every font@size, finds sections, bylines and page numbers.</p></div>
       <div class="step"><b>2</b><h3>Confirm</h3><p>Everything lands in one readable config file. Fix a role, a title or the language; nothing is hidden in code.</p></div>
@@ -172,21 +208,22 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
           <tr><td><code>--visual</code></td><td>Side-by-side PDF and EPUB screenshots</td></tr>
         </table>
       </div>
-      <figure><img src="assets/qa-report.png" alt="Terminal output of pdf2epub convert ending with: all checks passed."></figure>
+      <figure><img src="assets/qa-report.png" alt="Terminal output of aldleaf convert ending with: all checks passed."></figure>
     </div>
   </section>
 
   <section id="install">
     <h2>Install and run</h2>
+    <p class="sub"><b>Start from a PDF.</b> Aldleaf reads PDF files only for now. If your book is in Word, Pages, Google Docs, Scrivener or another editor, first export your final, edited, print-ready version as a PDF (for example File → Save As → PDF), then convert that PDF.</p>
     <p class="sub">Python 3.10+. EPUBCheck needs Java.</p>
-<pre>pip install git+https://github.com/5aahil/pdf2epub-kit
-pdf2epub fetch-epubcheck
+<pre>pip install git+https://github.com/5aahil/aldleaf-pdf2epub
+aldleaf fetch-epubcheck
 
-pdf2epub analyze book.pdf        # writes book.pdf2epub.yaml: review it
-pdf2epub build book.pdf          # book.epub + book_QA.txt
+aldleaf analyze book.pdf        # writes book.aldleaf.yaml: review it
+aldleaf build book.pdf          # book.epub + book_QA.txt
 # or both at once:
-pdf2epub convert book.pdf --cover cover.jpg</pre>
-    <p style="margin-top:16px">Then open the EPUB in Apple Books, or upload it at Send to Kindle. The <a href="https://github.com/5aahil/pdf2epub-kit/blob/main/docs/config.md">config reference</a> explains every option.</p>
+aldleaf convert book.pdf --cover cover.jpg</pre>
+    <p style="margin-top:16px">Then open the EPUB in Apple Books, or upload it at Send to Kindle. The <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/docs/config.md">config reference</a> explains every option.</p>
   </section>
 
   <section>
@@ -195,20 +232,20 @@ pdf2epub convert book.pdf --cover cover.jpg</pre>
         <h2>Works with Claude</h2>
         <p class="sub">The companion Claude skill <code>pdf-to-epub</code> runs the whole loop with you. It analyses the PDF, checks the proposed config against rendered pages, builds and checks the EPUB, and hands over the result with a device checklist.</p>
         <p class="sub"><b>Claude Code:</b></p>
-<pre>/plugin marketplace add 5aahil/pdf2epub-kit
-/plugin install pdf2epub@pdf2epub-kit</pre>
-        <p class="sub"><b>Claude app:</b> download <a href="pdf-to-epub-skill.zip">pdf-to-epub-skill.zip</a>, then go to Customize → Skills → + → Upload a skill. Code execution must be on. <a href="https://github.com/5aahil/pdf2epub-kit/blob/main/plugin/skills/pdf-to-epub/SKILL.md">Read the skill</a> first.</p>
+<pre>/plugin marketplace add 5aahil/aldleaf-pdf2epub
+/plugin install aldleaf@aldleaf</pre>
+        <p class="sub"><b>Claude app:</b> download <a href="pdf-to-epub-skill.zip">pdf-to-epub-skill.zip</a>, then go to Customize → Skills → + → Upload a skill. Code execution must be on. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/plugin/skills/pdf-to-epub/SKILL.md">Read the skill</a> first.</p>
       </div>
       <div>
         <h2>Rights and privacy</h2>
-        <p class="sub">For authors and publishers converting their own books, and readers converting their own copy for their own devices. Copy-protected PDFs are refused. Buyer stamps are left out unless you pass <code>--stamp</code>. PDFs, EPUBs and configs are never committed: CI enforces it.</p>
+        <p class="sub">For authors and publishers converting their own books, and readers converting their own copy for their own devices. Copy-protected PDFs are refused. Buyer stamps are left out unless you pass <code>--stamp</code>. PDFs, EPUBs and configs are never committed: CI enforces it. Aldleaf collects no data: no accounts, no analytics, no server. Read the <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">privacy policy</a>.</p>
       </div>
     </div>
   </section>
 
   <section>
     <h2>Not in scope (yet)</h2>
-    <p class="sub">Scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths.</p>
+    <p class="sub">Word, Pages and other editor files (export a PDF first), scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths.</p>
   </section>
 
   <section id="ai-disclosure">
@@ -221,7 +258,7 @@ pdf2epub convert book.pdf --cover cover.jpg</pre>
     </div>
   </section>
 
-  <footer>MIT licence · <a href="https://github.com/5aahil/pdf2epub-kit">github.com/5aahil/pdf2epub-kit</a> · Sample images use invented text. Apple Books, Kindle and Kobo are trademarks of their owners; this project is not affiliated with them.</footer>
+  <footer>Aldleaf (earlier pdf2epub-kit) is named after the Aldine leaf ❦, the printer's leaf ornament of Aldus Manutius; the logo's leaf is the ❦ from Noto Sans Symbols 2 (SIL Open Font License). MIT licence · <a href="https://github.com/5aahil/aldleaf-pdf2epub">github.com/5aahil/aldleaf-pdf2epub</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Privacy policy</a> · Sample images use invented text. Apple Books, Kindle, Kobo and Claude are trademarks of their owners; this project is not affiliated with them.</footer>
 </div>
 </body>
 </html>

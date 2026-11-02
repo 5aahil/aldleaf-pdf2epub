@@ -6,11 +6,11 @@ import zipfile
 import pytest
 
 from make_sample import make
-from pdf2epub.analyze import analyze
-from pdf2epub.build import build
-from pdf2epub.check import check, find_epubcheck
-from pdf2epub.model import load
-from pdf2epub.text import Dehyphenator, append_line, int_to_roman, roman_to_int, shift_label
+from aldleaf.analyze import analyze
+from aldleaf.build import build
+from aldleaf.check import check, find_epubcheck
+from aldleaf.model import load
+from aldleaf.text import Dehyphenator, append_line, int_to_roman, roman_to_int, shift_label
 
 
 @pytest.fixture(scope="module")

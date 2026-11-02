@@ -10,7 +10,8 @@
 *.kfx
 
 # Book configs and build reports (contain text samples from the book)
-*.pdf2epub.yaml
+*.aldleaf.yaml
+*.aldleaf.yaml
 *.build.json
 *_QA.txt
 

@@ -13,7 +13,7 @@ from .text import words
 
 EPUBCHECK_VERSION = "5.3.0"
 EPUBCHECK_URL = f"https://github.com/w3c/epubcheck/releases/download/v{EPUBCHECK_VERSION}/epubcheck-{EPUBCHECK_VERSION}.zip"
-CACHE = os.path.join(os.path.expanduser("~"), ".cache", "pdf2epub")
+CACHE = os.path.join(os.path.expanduser("~"), ".cache", "aldleaf")
 
 
 def find_epubcheck():
@@ -34,7 +34,7 @@ def fetch_epubcheck():
 def run_epubcheck(epub_path):
     jar = find_epubcheck()
     if not jar or not shutil.which("java"):
-        return None, "EPUBCheck not available (needs Java; run `pdf2epub fetch-epubcheck`)."
+        return None, "EPUBCheck not available (needs Java; run `aldleaf fetch-epubcheck`)."
     p = subprocess.run(["java", "-jar", jar, epub_path], capture_output=True, text=True)
     out = p.stdout + p.stderr
     msgs = [l for l in out.splitlines() if re.match(r"^(ERROR|WARNING|FATAL)", l)]
@@ -194,7 +194,7 @@ def visual_report(epub_path, pdf_path, config, out_dir, max_sections=12):
         b.close()
     rep = os.path.join(out_dir, "visual_report.html")
     with open(rep, "w", encoding="utf-8") as fh:
-        fh.write("<!doctype html><meta charset='utf-8'><title>pdf2epub visual check</title>"
+        fh.write("<!doctype html><meta charset='utf-8'><title>Aldleaf visual check</title>"
                  "<table border=1 cellpadding=6>" + "".join(rows) + "</table>")
     return rep, None
 

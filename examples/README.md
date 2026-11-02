@@ -5,7 +5,7 @@ Generate the synthetic sample books used in the tests (invented text only) and c
 ```
 python tests/make_sample.py sample.pdf          # anthology with chats, emails, screen text
 python -c "import sys; sys.path.insert(0,'tests'); import fixtures; fixtures.novel('novel.pdf'); fixtures.nonfiction('nonfiction.pdf'); fixtures.poetry('poetry.pdf')"
-pdf2epub convert sample.pdf
+aldleaf convert sample.pdf
 ```
 
 Generated PDFs, EPUBs and configs are git-ignored.

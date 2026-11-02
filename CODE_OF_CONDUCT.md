@@ -1,6 +1,6 @@
 # Code of conduct
 
-pdf2epub-kit is a small project for authors, publishers and readers. We want everyone who takes part to feel welcome and safe.
+Aldleaf is a small project for authors, publishers and readers. We want everyone who takes part to feel welcome and safe.
 
 ## Our standards
 
