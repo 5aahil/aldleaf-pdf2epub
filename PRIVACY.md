@@ -1,6 +1,6 @@
 # Privacy policy
 
-This policy covers the Aldleaf toolkit and its companion Claude skill, `pdf-to-epub` (the "Aldleaf" plugin). Last updated: 3 November 2026.
+This policy covers the Aldleaf toolkit and its companion Claude skills, `aldleaf` and its shortcuts `pdf2epub` and `pdf-to-epub` (the "aldleaf" plugin). Last updated: 3 November 2026.
 
 ## Short version
 

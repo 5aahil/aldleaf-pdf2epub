@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t">
+  <title id="t">Aldleaf logo: a fixed page turning into an open, reflowing book, with an Aldine leaf ornament (floral heart from Noto Sans Symbols 2, SIL Open Font License)</title>
+  <g transform="translate(-6 16) scale(0.9)">
+  <!-- fixed print page -->
+  <rect x="10" y="14" width="56" height="74" rx="5" fill="#1c1b19" stroke="#ece6dc" stroke-width="5"/>
+  <path d="M52 14 v14 h14" fill="none" stroke="#ece6dc" stroke-width="5" stroke-linejoin="round"/>
+  <g stroke="#ece6dc" stroke-width="4" stroke-linecap="round">
+    <line x1="20" y1="40" x2="56" y2="40"/>
+    <line x1="20" y1="52" x2="56" y2="52"/>
+    <line x1="20" y1="64" x2="46" y2="64"/>
+  </g>
+  <!-- open book -->
+  <path d="M40 98 C56 88 74 88 84 96 C94 88 112 88 122 98 V60 C112 50 94 50 84 58 C74 50 56 50 40 60 Z"
+        fill="#e0a43a" stroke="#ece6dc" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M84 58 V96" stroke="#ece6dc" stroke-width="5"/>
+  <g stroke="#1d1b18" stroke-width="3.5" stroke-linecap="round" opacity="0.85">
+    <path d="M50 70 C58 66 66 66 74 70"/>
+    <path d="M50 80 C58 76 66 76 74 80"/>
+    <path d="M94 70 C102 66 110 66 114 68"/>
+    <path d="M94 80 C102 76 110 76 114 78"/>
+  </g>
+</g>
+  <g transform="translate(100 2) rotate(12) scale(0.06553) translate(-392.0 686.0)"><path fill="#ece6dc" transform="scale(1,-1)" d="M401 318 391 340 420 397Q427 410 431.0 421.5Q435 433 439 444Q376 465 327 508L289 542Q207 616 167 616Q105 616 105 556Q105 536 115.0 524.0Q125 512 139 512Q150 512 156.5 514.5Q163 517 173 524Q170 496 153.5 480.0Q137 464 109 464Q81 464 66.0 485.5Q51 507 51 536Q51 586 83.0 620.0Q115 654 173 654Q236 654 343 568Q337 588 337 616Q337 645 357.5 665.5Q378 686 413 686Q455 686 481.0 655.0Q507 624 507 576Q507 538 483 478Q497 471 521.5 466.5Q546 462 565 462Q604 462 622.5 478.0Q641 494 641 516Q641 534 626 544Q611 555 611 578Q611 603 628.0 619.5Q645 636 671 636Q698 636 715.5 615.5Q733 595 733 566Q733 542 714.0 509.0Q695 476 656 451Q616 426 559 426Q506 426 465 436Q448 392 401 318ZM455 492Q460 512 462.5 530.0Q465 548 465 564Q465 595 449.5 616.5Q434 638 409 638Q386 638 374.5 626.0Q363 614 363 594Q363 587 364.0 575.5Q365 564 367 550Q391 529 414 516ZM465 -138Q417 -138 363.0 -115.5Q309 -93 260.0 -53.5Q211 -14 177 38Q127 115 127 202Q127 260 144.0 307.0Q161 354 193.5 382.0Q226 410 273 410Q326 410 354.0 377.5Q382 345 385 274H401Q415 324 451.0 354.0Q487 384 539 384Q598 384 631.5 345.0Q665 306 665 240Q665 205 641.5 166.0Q618 127 558 88Q497 48 463.0 20.5Q429 -7 429 -44Q429 -68 449.0 -85.0Q469 -102 493 -102Q520 -102 535.5 -87.5Q551 -73 551 -50Q551 -31 533 2Q551 38 581 38Q629 38 629 -14Q629 -63 587.0 -100.5Q545 -138 465 -138Z"/></g>
+</svg>

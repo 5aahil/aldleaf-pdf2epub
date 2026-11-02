@@ -3,9 +3,11 @@ import html
 import re
 import unicodedata
 
+from .i18n import joins_without_space, repair_text_layer
+
 ROMAN_RE = re.compile(r"^(?=[ivxlcdm]+$)m{0,3}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})$", re.I)
-TERMINAL = tuple('.!?…:;"”’\')*]')
-WORD_RE = re.compile(r"[A-Za-z0-9À-ÖØ-öø-ÿ’']+")
+TERMINAL = tuple('.!?…:;"”’\')*]。！？．」』）】〉》।॥၊။።')
+WORD_RE = re.compile(r"[^\W_]+(?:[’'][^\W_]+)*")
 
 
 def esc(t):
@@ -19,6 +21,7 @@ def esc_attr(t):
 def norm(t):
     """Normalise PDF text: NFC, ligatures, soft hyphens, exotic spaces."""
     t = unicodedata.normalize("NFC", t)
+    t = repair_text_layer(t)
     t = t.replace("­", "")
     for a, b in (("ﬀ", "ff"), ("ﬁ", "fi"), ("ﬂ", "fl"), ("ﬃ", "ffi"), ("ﬄ", "ffl")):
         t = t.replace(a, b)
@@ -148,12 +151,21 @@ class Dehyphenator:
         self.auto = auto_hyphenated
         self.words = set()
         self.hyph = set()
+        self.inner = set()     # Korean words seen whole, inside a line
+        # True when the PDF writes the space at the end of a line that ends a word
+        # (browsers do). Then a line without one broke inside a word.
+        self.line_end_spaces = False
 
     def learn(self, text):
-        for w in re.findall(r"[A-Za-z]+(?:-[A-Za-z]+)+", text):
+        for w in re.findall(r"[^\W\d_]+(?:-[^\W\d_]+)+", text):
             self.hyph.add(w.lower())
-        for w in re.findall(r"[A-Za-z]+", text):
+        for w in re.findall(r"[^\W\d_]+", text):
             self.words.add(w.lower())
+        inner = text.split()[1:-1]   # words inside a line are never cut by a line break
+        for w in inner:
+            m = _HANGUL_WORD.fullmatch(w.strip(".,!?;:\"'()[]“”‘’…"))
+            if m:
+                self.inner.add(m.group(0))
 
     def drop(self, a, b):
         if not self.auto:
@@ -164,14 +176,60 @@ class Dehyphenator:
         return joined in self.words or len(a) >= 2
 
 
+_KO_PARTICLES = {"를", "을", "는", "은", "의", "와", "과", "로", "으로", "도", "에", "에서", "에게", "만",
+                 "부터", "까지", "처럼", "보다", "께서", "한테", "라고", "이라고"}
+_HANGUL = re.compile(r"[\uac00-\ud7af]+$")
+_HANGUL_START = re.compile(r"^[\uac00-\ud7af]+")
+
+
+_HANGUL_WORD = re.compile(r"[\uac00-\ud7a3]+")
+
+
+def _is_hangul(c):
+    return "\uac00" <= c <= "\ud7a3"
+
+
+def _split_hangul(prev, nxt, dh):
+    """Korean lines may break inside a word (between syllables). Decide from the
+    book's own vocabulary and from what Korean grammar allows."""
+    a, b = _HANGUL.search(prev), _HANGUL_START.match(nxt)
+    if not a or not b:
+        return False
+    a, b = a.group(0), b.group(0)
+    joined = (a + b).lower()
+    rest = nxt[len(b):len(b) + 1]
+    if joined in dh.inner or (not dh.inner and joined in dh.words):
+        return True                # the unbroken word appears whole elsewhere
+    # a particle or ending can't stand alone, so the line broke inside a word
+    if b in _KO_PARTICLES and (not rest or rest.isspace() or rest in ".,!?;:"):
+        return True
+    if b == "지" and re.match(r"\s+(않|못|말)", nxt[len(b):]):   # '-지 않다', '-지 못하다'
+        return True
+    if b[0] in _KO_BOUND:          # tense syllables never start a word
+        return True
+    if b == "다" and rest in ".!?":
+        return True
+    if not dh.inner or a in dh.inner or b in dh.inner:
+        return False               # a word of its own on either side: a real space
+    if len(a) >= 2 and a[-1] in _KO_CLOSING:
+        return False               # the line ended on a particle that closes a word
+    return True                    # neither half is a word anywhere in the book
+
+
+_KO_BOUND = set("었았였렸겠셨웠")
+_KO_CLOSING = set("은는을를의에도만와과")
+
+
 def append_line(runs, line_runs, dh, forced_break=False):
     """Append a line's runs to a paragraph's runs, joining with a space,
     a forced line break, or a removed layout hyphen."""
     if not runs:
         runs.extend(line_runs)
         return
-    prev = runs_text(runs).rstrip()
-    nxt = runs_text(line_runs).lstrip()
+    prev_raw, nxt_raw = runs_text(runs), runs_text(line_runs)
+    prev = prev_raw.rstrip()
+    nxt = nxt_raw.lstrip()
+    real_space = prev_raw[-1:].isspace() or nxt_raw[:1].isspace()   # Thai phrases end in a real space
     i = len(runs) - 1
     while i >= 0 and is_marker(runs[i]):
         i -= 1
@@ -184,12 +242,17 @@ def append_line(runs, line_runs, dh, forced_break=False):
             break
     if forced_break:
         runs.append(("\n", frozenset()))
-    elif re.search(r"[A-Za-z]-$", prev) and not prev.endswith("--") and re.match(r"[a-z]", nxt):
-        a = re.search(r"([A-Za-z]+)-$", prev).group(1)
-        b = re.match(r"([a-z]+)", nxt).group(1)
+    elif re.search(r"[^\W\d_]-$", prev) and not prev.endswith("--") and nxt[:1].islower():
+        a = re.search(r"([^\W\d_]+)-$", prev).group(1)
+        b = re.match(r"([^\W\d_]+)", nxt).group(1)
         if dh is not None and dh.drop(a, b) and i >= 0:
             runs[i] = (runs[i][0][:-1], runs[i][1])
-    elif prev.endswith(("—", "–", "/")):
+    elif prev.endswith(("—", "–", "/")) or (prev and nxt and not real_space and joins_without_space(prev[-1], nxt[0])):
+        pass
+    elif (prev and nxt and dh is not None and dh.line_end_spaces and not real_space
+          and _is_hangul(prev[-1]) and _is_hangul(nxt[0])):
+        pass
+    elif prev and nxt and dh is not None and _split_hangul(prev, nxt, dh):
         pass
     else:
         runs.append((" ", runs[i][1] if i >= 0 else frozenset()))

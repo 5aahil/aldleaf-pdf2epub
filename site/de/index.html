@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aldleaf: PDF-zu-EPUB-Konverter (pdf2epub) für Selfpublisher</title>
+<meta name="description" content="Aldleaf ist ein kostenloser Open-Source-Konverter von PDF zu EPUB (pdf2epub) für Selfpublisher, Autorinnen, Autoren und Verlage. Er liest das Layout eines textbasierten PDF-Buchs und erstellt ein sauberes, geprüftes, barrierearmes EPUB 3 für Kindle, Apple Books, Tolino, Kobo und jede E-Book-Plattform.">
+<link rel="canonical" href="https://5aahil.github.io/aldleaf-pdf2epub/de/">
+<link rel="alternate" hreflang="en" href="https://5aahil.github.io/aldleaf-pdf2epub/">
+<link rel="alternate" hreflang="de" href="https://5aahil.github.io/aldleaf-pdf2epub/de/">
+<link rel="alternate" hreflang="x-default" href="https://5aahil.github.io/aldleaf-pdf2epub/">
+<meta property="og:title" content="Aldleaf: jedes gedruckte Blatt, neu geschrieben als EPUB">
+<meta property="og:url" content="https://5aahil.github.io/aldleaf-pdf2epub/de/">
+<meta property="og:type" content="website">
+<meta property="og:description" content="Kostenloser Open-Source-Konverter von PDF zu EPUB (pdf2epub) für Selfpublisher: textbasierte PDF-Bücher als sauberes, geprüftes EPUB 3.">
+<meta property="og:locale" content="de_DE">
+<meta property="og:image" content="https://5aahil.github.io/aldleaf-pdf2epub/assets/de/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+<link rel="icon" href="../assets/logo-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+<style>
+:root {
+  --bg: #fbf8f2; --surface: #ffffff; --ink: #1d1b18; --muted: #6d665b; --line: #e4ddd0;
+  --accent: #e0a43a; --teal: #2f6f73; --code-bg: #1b1a18; --code-ink: #e8e3da;
+  --radius: 14px; --max: 1080px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131211; --surface: #1c1b19; --ink: #ece6dc; --muted: #a59d90; --line: #2e2c28;
+    --accent: #e8b155; --teal: #5fa6aa; --code-bg: #0c0c0b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131211; --surface: #1c1b19; --ink: #ece6dc; --muted: #a59d90; --line: #2e2c28;
+  --accent: #e8b155; --teal: #5fa6aa; --code-bg: #0c0c0b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--teal); }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px; }
+header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; text-decoration: none; color: var(--ink); }
+.brand img { width: 34px; height: 34px; }
+header.top { gap: 14px; }
+.right { display: flex; align-items: center; gap: 16px; }
+nav { display: flex; align-items: center; }
+nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 15px; }
+nav a:hover { color: var(--ink); }
+.nav-head { display: none; }
+.lang { display: inline-flex; padding: 3px; border-radius: 999px; flex-shrink: 0;
+        background: rgba(229, 229, 234, 0.9); border: 1px solid #8e8e93;
+        -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); }
+.lang a { padding: 5px 13px; border-radius: 999px; border: 1px solid transparent; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-decoration: none; color: #3a3a3c; }
+.lang a[aria-current="true"] { background: #ffffff; color: #1c1c1e; border-color: #6e6e73; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.lang a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .lang { background: rgba(58, 58, 60, 0.9); border-color: #8e8e93; }
+  :root:not([data-theme="light"]) .lang a { color: #ebebf0; }
+  :root:not([data-theme="light"]) .lang a[aria-current="true"] { background: #f2f2f7; color: #1c1c1e; border-color: #f2f2f7; box-shadow: none; }
+}
+.menu-btn { display: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; padding: 0; align-items: center; justify-content: center; }
+.menu-btn svg { width: 22px; height: 22px; }
+.scrim { display: none; }
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 40px 0 30px; }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
+.hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
+.hero img { width: 100%; height: auto; border-radius: var(--radius); }
+.kicker { margin: 0 0 8px; color: var(--teal); font-weight: 600; letter-spacing: 0.02em; }
+.real { display: inline-flex; align-items: center; gap: 12px; margin: 0 0 22px; text-decoration: none; color: var(--muted); font-size: 14px; line-height: 1.35; }
+.real img { width: 64px; height: auto; background: #fff; border-radius: 10px; }
+.real small { font-size: 12.5px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-block; padding: 11px 18px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 15px; }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn.ghost { border: 1.5px solid var(--line); color: var(--ink); }
+pre, code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+pre { background: var(--code-bg); color: var(--code-ink); padding: 16px 18px; border-radius: 12px; overflow-x: auto; font-size: 14.5px; line-height: 1.55; margin: 0; }
+p code, li code, td code { background: var(--line); padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
+section { padding: 46px 0; border-top: 1px solid var(--line); }
+section h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 10px; letter-spacing: -0.01em; }
+section p.sub { color: var(--muted); margin: 0 0 26px; max-width: 760px; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.step b { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #1d1b18; text-align: center; line-height: 28px; margin-bottom: 8px; }
+.step h3 { margin: 4px 0 6px; font-size: 17px; }
+.step p { margin: 0; color: var(--muted); font-size: 15px; }
+figure { margin: 0; }
+figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); display: block; }
+figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.card h3 { margin: 0 0 6px; font-size: 17px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.two > * { min-width: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+td, th { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; }
+.note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 14px 16px; border-radius: 10px; }
+footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+@media (max-width: 860px) {
+  .hero, .two { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  nav a { margin-left: 12px; }
+}
+@media (max-width: 760px) {
+  .menu-btn { display: inline-flex; }
+  nav { position: fixed; top: 0; right: 0; bottom: 0; width: min(80vw, 300px); z-index: 30;
+        flex-direction: column; align-items: stretch; background: var(--surface); border-left: 1px solid var(--line);
+        padding: 18px 20px; transform: translateX(105%); visibility: hidden; transition: transform .22s ease, visibility .22s; box-shadow: -12px 0 30px rgba(0,0,0,.18); }
+  nav.open { transform: none; visibility: visible; }
+  nav a { margin: 0; padding: 13px 4px; font-size: 17px; color: var(--ink); border-bottom: 1px solid var(--line); }
+  .nav-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 18px; }
+  .nav-head .menu-btn { display: inline-flex; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 25; }
+  .scrim.open { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { nav { transition: none; } }
+@media (max-width: 480px) {
+  .steps { grid-template-columns: 1fr; }
+}
+</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Aldleaf",
+ "alternateName": [
+  "Aldleaf PDF to EPUB",
+  "pdf2epub-kit",
+  "pdf2epub"
+ ],
+ "description": "Aldleaf ist ein kostenloser Open-Source-Konverter von PDF zu EPUB (pdf2epub) für Selfpublisher, Autorinnen, Autoren und Verlage.",
+ "inLanguage": "de",
+ "applicationCategory": "DeveloperApplication",
+ "operatingSystem": "Windows, macOS, Linux",
+ "url": "https://5aahil.github.io/aldleaf-pdf2epub/de/",
+ "codeRepository": "https://github.com/5aahil/aldleaf-pdf2epub",
+ "license": "https://opensource.org/licenses/MIT",
+ "softwareVersion": "0.2.0",
+ "author": {
+  "@type": "Person",
+  "name": "Saahil Khanna",
+  "url": "https://github.com/5aahil"
+ },
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "EUR"
+ },
+ "keywords": "PDF zu EPUB, PDF in EPUB umwandeln, pdf2epub, EPUB 3, E-Book erstellen, Selfpublishing, Kindle, Tolino, Apple Books"
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#"><picture><source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.svg"><img src="../assets/logo.svg" alt=""></picture>Aldleaf</a>
+    <div class="right">
+      <nav id="site-nav" aria-label="Hauptmenü">
+        <div class="nav-head"><span>Menü</span><button class="menu-btn" type="button" data-close aria-label="Menü schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+        <a href="#who">Für wen</a><a href="#how">So funktioniert es</a><a href="#features">Funktionen</a><a href="#languages">Sprachen</a><a href="#install">Installation</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Sprache"><a href="../" hreflang="en" lang="en">EN</a><a href="./" hreflang="de" lang="de" aria-current="true">DE</a></div>
+      <button class="menu-btn" type="button" data-open aria-controls="site-nav" aria-expanded="false" aria-label="Menü öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </header>
+  <div class="scrim" data-close></div>
+
+  <div class="hero">
+    <div>
+      <p class="kicker">Aldleaf · PDF zu EPUB, aber richtig</p>
+      <h1>Jedes gedruckte Blatt, neu geschrieben als EPUB.</h1>
+      <p class="lead"><b>Für Autorinnen, Autoren und Verlage im Selfpublishing.</b> Aldleaf ist ein kostenloser Open-Source-<b>Konverter von PDF zu EPUB</b>. Er liest das Layout deines textbasierten PDF-Buchs und erstellt ein sauberes, geprüftes EPUB 3, das du auf jeder Plattform deiner Wahl veröffentlichen kannst. Er erkennt, wofür jede Schrift verwendet wird, findet die Kapitel, liest die Seitenzahlen und prüft dann jeden Buchstaben gegen das PDF. Du schreibst in Word oder einem anderen Programm? Exportiere zuerst deine fertige, druckreife Fassung als PDF.</p>
+      <a class="real" href="#ai-disclosure" title="REAL Rating 3: moderate KI"><img src="../assets/real-rating-3.png" alt="REAL Rating 3 (2026): Moderate AI"><span>REAL Rating 3 · moderate KI<br><small>KI hat Bausteine unter Leitung des Autors beigetragen</small></span></a>
+      <div class="cta">
+        <a class="btn primary" href="#install">Loslegen</a>
+        <a class="btn ghost" href="https://github.com/5aahil/aldleaf-pdf2epub">Auf GitHub ansehen</a>
+      </div>
+    </div>
+    <img src="../assets/de/hero.svg" alt="Eine feste PDF-Seite durchläuft Analysieren, Bestätigen, Erstellen und Prüfen und wird zu einem umfließenden E-Book in hellem und dunklem Design.">
+  </div>
+
+  <section id="who">
+    <h2>Für wen</h2>
+    <p class="sub">Für alle im Selfpublishing, die ein druckreifes PDF haben, aber noch kein richtiges E-Book.</p>
+    <div class="grid">
+      <div class="card"><h3>Selfpublisher</h3><p>Du hast dein Buch für den Druck gesetzt (InDesign, Affinity, Word, Vellum, Scribus, LaTeX) und willst ein E-Book, ohne für die Umwandlung zu bezahlen oder alles neu abzutippen.</p></div>
+      <div class="card"><h3>Kleine und unabhängige Verlage</h3><p>Mach aus Backlist und neuen Druckdateien einheitliche, barrierearme EPUBs.</p></div>
+      <div class="card"><h3>Anthologien und Wettbewerbe</h3><p>Sammelbände mit vielen Autorinnen und Autoren, Namenszeilen, Widmungen und Inhaltswarnungen.</p></div>
+    </div>
+    <div class="note" style="margin-top:18px"><b>Veröffentliche überall.</b> Das Ergebnis ist ein standardkonformes, geprüftes EPUB 3, das Format, das die großen Shops und Distributoren annehmen: Amazon KDP, Apple Books, Tolino Media, Kobo Writing Life, Google Play Books, Distributoren wie BoD oder Draft2Digital, oder der Direktverkauf über deine eigene Website. Prüfe vor dem Veröffentlichen die aktuellen Upload-Vorgaben des jeweiligen Shops.</div>
+    <p style="margin-top:16px;color:var(--muted);font-size:15px">Leserinnen und Leser können es auch für ihr eigenes DRM-freies Exemplar eines Buchs auf ihren eigenen Geräten nutzen. Es ist nicht dafür gedacht, Bücher umzuwandeln oder weiterzugeben, an denen du keine Rechte hast.</p>
+  </section>
+
+  <section id="how">
+    <h2>So funktioniert es</h2>
+    <p class="sub">Ein-Klick-Konverter machen aus einem PDF einfach Textzeilen. Aldleaf vermisst es, zeigt dir, was es gefunden hat, und erstellt das E-Book erst, wenn du zustimmst.</p>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Analysieren</h3><p>Misst Abstände, Einzüge und Ränder, bestimmt die Rolle jeder Schrift@Größe und findet Abschnitte, Namenszeilen und Seitenzahlen.</p></div>
+      <div class="step"><b>2</b><h3>Bestätigen</h3><p>Alles landet in einer lesbaren Konfigurationsdatei. Korrigiere eine Rolle, einen Titel oder die Sprache; nichts ist im Code versteckt.</p></div>
+      <div class="step"><b>3</b><h3>Erstellen</h3><p>Semantisches XHTML, EPUB-3-Navigation, Seitenliste, NCX-Fallback, Metadaten zur Barrierefreiheit, Cover und optionale Schriften.</p></div>
+      <div class="step"><b>4</b><h3>Prüfen</h3><p>EPUBCheck, jeder Buchstabe jedes Abschnitts mit dem PDF verglichen, Abdeckung der Seitenmarken, Lints und Screenshots im direkten Vergleich.</p></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>Vom Drucklayout zum echten E-Book</h2>
+    <p class="sub">Kolumnentitel, Seitenzahlen und harte Zeilenumbrüche werden anhand ihrer Position entfernt. Über Seiten getrennte Absätze werden wieder zusammengefügt. Chats, E-Mails und Bildschirmtexte werden zu echtem, gekennzeichnetem Text.</p>
+    <figure><img src="../assets/de/before-after.png" alt="Eine PDF-Seite mit Chatblasen und einer E-Mail neben der EPUB-Fassung auf zwei Smartphones."><figcaption>Synthetisches Beispielbuch. Jedes Wort in den Beispielen ist erfundener Fülltext.</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>Stempel und Abzeichen folgen dem Lese-Design</h2>
+        <p class="sub">Graue Vektorgrafiken wie Bewertungsstempel, Logos und Ornamente werden zu Inline-SVGs in der Textfarbe des Readers. Sie bleiben scharf, haben keinen weißen Kasten und werden im Nachtmodus hell. Kindle erhält ein transparentes PNG als Fallback. Farbige Grafiken bleiben Bilder.</p>
+        <div class="note">Setze <code>art: png</code> in der Konfiguration, um alle Grafiken als Bilder zu behalten.</div>
+      </div>
+      <figure><img src="../assets/de/adaptive-art.png" alt="Derselbe Geschichtenanfang im Tag- und im Nachtdesign; der Stempel ist dunkel auf hell und hell auf dunkel."></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Passt sich dem Buch an, nicht umgekehrt</h2>
+    <p class="sub">Nichts ist auf einen einzelnen Titel zugeschnitten. Das Profil wird aus jedem PDF gemessen und in die Konfiguration geschrieben.</p>
+    <figure><img src="../assets/de/book-kinds.png" alt="Vier Smartphones: ein Roman mit Initiale, ein Anthologie-Geschichtenanfang, ein Sachbuch mit Listen und Fußnote und ein Gedicht im Nachtmodus."></figure>
+    <div class="grid" style="margin-top:18px">
+      <div class="card"><h3>Romane</h3><p>Erstzeileneinzug oder Absätze mit Abstand, Blocksatz oder Flattersatz, Initialen, Überschriften aus „Kapitel 1“ und Titel. Trennstriche aus dem Satz werden entfernt, echte Bindestriche bleiben.</p></div>
+      <div class="card"><h3>Anthologien</h3><p>Namenszeilen, Widmungen und Inhaltswarnungen pro Geschichte. Die Autorinnen und Autoren erscheinen als Mitwirkende in den Metadaten.</p></div>
+      <div class="card"><h3>Sachbücher</h3><p>Zwischenüberschriften, Aufzählungen und nummerierte Listen, Fußnoten als Pop-up-Anmerkungen mit Links in beide Richtungen.</p></div>
+      <div class="card"><h3>Lyrik</h3><p>Jeder Zeilenumbruch und jede Strophe bleibt wie gesetzt.</p></div>
+      <div class="card"><h3>Szenenwechsel, wie gesetzt</h3><p>Das gedruckte Zeichen des Autors oder eine Leerzeile, nie durch eine Regel hinzugefügt oder entfernt. Lieber überall dasselbe Ornament? <code>scene_breaks: ornament</code>.</p></div>
+      <div class="card"><h3>Seitenzahlen der Druckausgabe</h3><p>Jede Seite bekommt eine Marke, auch unnummerierte Kapitelanfänge. Apple Books zeigt die gedruckten Seitenzahlen, damit Lesende sie zitieren können.</p></div>
+    </div>
+  </section>
+
+  <section id="languages">
+    <h2>Bücher in deiner Sprache</h2>
+    <p class="sub">Jede Sprache, die waagerecht von links nach rechts geschrieben wird. Aldleaf übersetzt deinen Text nie. Es erkennt die Sprache und setzt sie im EPUB, erkennt Kapitelbezeichnungen, Namenszeilen und Inhaltswarnungen in dieser Sprache und schreibt auch seine eigenen Beschriftungen darin.</p>
+    <figure><img src="../assets/de/languages.png" alt="Kapitelanfänge auf Hindi, Japanisch, Koreanisch, Russisch, Bengalisch, Chinesisch, Französisch und Tamil auf acht Smartphones." loading="lazy"><figcaption>Beispielbücher mit erfundenem Text, umgewandelt von Aldleaf.</figcaption></figure>
+    <div class="two" style="margin-top:18px">
+      <div>
+        <h3>Die Sprache wird für dich erkannt</h3>
+        <p class="sub">Aus dem PDF, der Schrift und den Wörtern. Reader, Shops und Screenreader brauchen sie für die richtigen Schriften, die Silbentrennung und die Aussprache. Zeilen auf Chinesisch, Japanisch und Thai werden ohne zusätzliche Leerzeichen verbunden, und eine beschädigte Textebene im PDF wird, wo es sicher ist, repariert oder sonst gemeldet. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/docs/languages.md">27 Sprachen Wort für Wort getestet</a> (Englisch), jeweils als Anthologie, Roman, Sachbuch und Lyrik.</p>
+        <div class="note"><b>Als Nächstes geplant:</b> Bücher von rechts nach links (Urdu, Arabisch, Persisch, Hebräisch), senkrechter chinesischer und japanischer Text und Bücher in mehr als einer Sprache, etwa zweisprachige Ausgaben, Übersetzungen neben dem Original oder eine Nacherzählung einer Mythologie, die die Originalverse zitiert.</div>
+      </div>
+      <figure><img src="../assets/de/language-detect.png" alt="Eine Tabelle mit zehn Beispielbüchern, dem erkannten Sprachcode, der von Aldleaf geschriebenen Inhaltsüberschrift und dem Ergebnis: alle Prüfungen bestanden." loading="lazy"></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>Es prüft seine eigene Arbeit</h2>
+        <p class="sub">Jeder Durchlauf schreibt einen Prüfbericht. Er vergleicht Buchstaben statt Wörter, damit Initialen und entfernte Trennstriche keine fehlende Zeile verstecken.</p>
+        <table>
+          <tr><th>Prüfung</th><th>Was sie findet</th></tr>
+          <tr><td>EPUBCheck</td><td>Alles, was Apple Books oder Send to Kindle ablehnen würden</td></tr>
+          <tr><td>Vollständigkeit</td><td>Verlorener oder doppelter Text, pro Abschnitt</td></tr>
+          <tr><td>Seitenmarken</td><td>Druckseiten ohne Marke</td></tr>
+          <tr><td>Lints</td><td>Übrig gebliebene Seitenzahlen, nicht verbundene Zeilenumbrüche, fehlende Absatzwechsel</td></tr>
+          <tr><td><code>--reference</code></td><td>Strukturelle Unterschiede zu einer handgemachten Ausgabe (ohne Textvergleich)</td></tr>
+          <tr><td><code>--visual</code></td><td>PDF- und EPUB-Screenshots im direkten Vergleich</td></tr>
+        </table>
+      </div>
+      <figure><img src="../assets/qa-report.png" alt="Terminalausgabe von aldleaf convert, endet mit: all checks passed."></figure>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Installieren und loslegen</h2>
+    <p class="sub"><b>Starte mit einem PDF.</b> Aldleaf liest vorerst nur PDF-Dateien. Liegt dein Buch in Word, Pages, Google Docs, Scrivener oder einem anderen Programm vor, exportiere zuerst deine fertige, lektorierte, druckreife Fassung als PDF (zum Beispiel Datei → Speichern unter → PDF) und wandle dann dieses PDF um.</p>
+    <p class="sub">Python 3.10+. EPUBCheck benötigt Java.</p>
+<pre>pip install git+https://github.com/5aahil/aldleaf-pdf2epub
+aldleaf fetch-epubcheck
+
+aldleaf analyze book.pdf        # schreibt book.aldleaf.yaml: prüfen
+aldleaf build book.pdf          # book.epub + book_QA.txt
+# oder beides auf einmal:
+aldleaf convert book.pdf --cover cover.jpg</pre>
+    <p style="margin-top:16px">Öffne das EPUB dann in Apple Books oder lade es bei Send to Kindle hoch. Die <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/docs/config.md">Konfigurationsreferenz</a> (Englisch) erklärt jede Option.</p>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <h2>Funktioniert mit Claude</h2>
+        <p class="sub">Der passende Claude-Skill <code>aldleaf</code> (Kurznamen: <code>pdf2epub</code> und <code>pdf-to-epub</code>) führt dich durch den ganzen Ablauf. Er analysiert das PDF, prüft die vorgeschlagene Konfiguration an gerenderten Seiten, erstellt und prüft das EPUB und übergibt das Ergebnis mit einer Checkliste für deine Geräte.</p>
+        <p class="sub"><b>Claude Code:</b></p>
+<pre>/plugin marketplace add 5aahil/aldleaf-pdf2epub
+/plugin install aldleaf@aldleaf
+
+# dann /aldleaf:aldleaf, /aldleaf:pdf2epub oder /aldleaf:pdf-to-epub ausführen</pre>
+        <p class="sub"><b>Claude-App:</b> Lade <a href="../aldleaf-skill.zip">aldleaf-skill.zip</a> herunter und gehe zu Customize → Skills → + → Upload a skill. Die Codeausführung muss aktiviert sein. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/plugin/skills/aldleaf/SKILL.md">Lies den Skill</a> vorher.</p>
+      </div>
+      <div>
+        <h2>Rechte und Datenschutz</h2>
+        <p class="sub">Für Autorinnen, Autoren und Verlage, die ihre eigenen Bücher umwandeln, und für Lesende, die ihr eigenes Exemplar für ihre eigenen Geräte umwandeln. Kopiergeschützte PDFs werden abgelehnt. Käuferstempel werden weggelassen, außer du gibst <code>--stamp</code> an. PDFs, EPUBs und Konfigurationen werden nie ins Repository übernommen: Die CI erzwingt das. Aldleaf sammelt keine Daten: keine Konten, keine Analyse, kein Server. Lies die <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Datenschutzerklärung</a> (Englisch).</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>(Noch) nicht unterstützt</h2>
+    <p class="sub">Word-, Pages- und andere Programmdateien (zuerst als PDF exportieren), gescannte PDFs ohne Textebene (werden erkannt und abgelehnt), mehrspaltiger Fließtext, große Tabellen und Formeln, Schriften von rechts nach links (Arabisch, Hebräisch, Persisch, Urdu) und senkrechter chinesischer oder japanischer Text (beides wird erkannt und mit einer klaren Meldung abgelehnt und ist als Nächstes geplant).</p>
+  </section>
+
+  <section id="ai-disclosure">
+    <div class="two">
+      <div>
+        <h2>KI-Offenlegung</h2>
+        <p class="sub">REAL Rating 3 (moderate KI), selbst eingestuft auf der <a href="https://www.realgoodai.org/real-rating">REAL-Rating</a>-Skala von Real Good AI. KI hat unter Leitung des Autors Bausteine beigetragen (Code, Dokumentation und Illustrationen). Der Autor hat die Anforderungen und das Design festgelegt, das Toolkit an echten Büchern getestet, Fehler gemeldet und die Korrekturen geprüft und alle Entscheidungen getroffen.</p>
+      </div>
+      <figure style="max-width:220px"><img src="../assets/real-rating-3.png" alt="REAL Rating 3 (2026): Moderate AI" style="border:0;background:#fff"></figure>
+    </div>
+  </section>
+
+  <footer>Aldleaf (früher pdf2epub-kit) ist nach dem aldinischen Blatt ❦ benannt, dem Blattornament des Druckers Aldus Manutius; das Blatt im Logo ist das ❦ aus Noto Sans Symbols 2 (SIL Open Font License). MIT-Lizenz · <a href="https://github.com/5aahil/aldleaf-pdf2epub">github.com/5aahil/aldleaf-pdf2epub</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Datenschutzerklärung</a> · Die Beispielbilder verwenden erfundenen Text. Apple Books, Kindle, Kobo, Tolino und Claude sind Marken ihrer jeweiligen Inhaber; dieses Projekt ist nicht mit ihnen verbunden.</footer>
+</div>
+<script>
+(function () {
+  var nav = document.getElementById('site-nav'), scrim = document.querySelector('.scrim'), openBtn = document.querySelector('[data-open]');
+  function set(open) {
+    nav.classList.toggle('open', open); scrim.classList.toggle('open', open);
+    openBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    setTimeout(function () { if (open) { var c = nav.querySelector('[data-close]'); if (c) c.focus(); } else { openBtn.focus(); } }, 60);
+  }
+  openBtn.addEventListener('click', function () { set(true); });
+  document.querySelectorAll('[data-close]').forEach(function (el) { el.addEventListener('click', function () { set(false); }); });
+  nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { if (nav.classList.contains('open')) set(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('open')) set(false); });
+})();
+</script>
+</body>
+</html>

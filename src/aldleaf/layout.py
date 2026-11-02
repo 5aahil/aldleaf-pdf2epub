@@ -3,9 +3,7 @@ import re
 
 from .text import (TERMINAL, append_line, is_marker, runs_text, strip_runs)
 
-EMAIL_HDR = re.compile(r"^(From|Sent|To|Cc|CC|Bcc|Subject|Date):")
-WARN_HDR = re.compile(r"^(trigger|content)\s+warnings?:?$", re.I)
-BYLINE = re.compile(r"^\s*by[:\s]\s*\S", re.I)
+from .i18n import BYLINE, CHAPTER_LABEL, EMAIL_FROM, EMAIL_HDR, WARN_HDR
 SYMBOLS = set("*#~•·◆◇❖❧☙⁂§°+=_-—–. ")
 LIST_RE = re.compile(r"^\s*(?:([•·◦▪‣●○■□–-])|(\(?\d{1,3}[.)]|\(?[a-z][.)]))\s+\S")
 NOTE_RE = re.compile(r"^\s*([\d]{1,3}|[*†‡§¶]{1,3})[.)]?\s+")
@@ -92,7 +90,7 @@ class Layout:
         for pg in pages:
             L = [l for l in pg.lines if self.role(l) in roles and cond(l)]
             for a, b in zip(L, L[1:]):
-                if 0 < b.y0 - a.y0 < self.geo["leading"] * 1.15:
+                if 0 < b.base - a.base < self.geo["leading"] * 1.15:
                     ws.append(a.width)
         return max(ws) if ws else self.geo["text_width"]
 
@@ -123,6 +121,8 @@ class Layout:
                 continue
             if r.y1 < top - 4 or r.y0 > bottom + 4:
                 continue  # running head/foot decoration
+            if any(r.x0 - 2 <= l.x0 and l.x1 <= r.x1 + 2 and r.y0 - 2 <= l.y0 and l.y1 <= r.y1 + 2 for l in pg.lines):
+                continue  # a frame or shaded box around real text (warning boxes, callouts) is not artwork
             rects.append(r)
         # cluster nearby shapes
         clusters = []
@@ -185,7 +185,7 @@ class Layout:
                 ln = obj
                 role = self.role(ln)
                 t = ln.text.strip()
-                gap = (ln.y0 - prev.y0) if (prev is not None and not page_top) else None
+                gap = (ln.base - prev.base) if (prev is not None and not page_top) else None
                 indent = ln.x0 - margin
                 runs = line_runs(ln, in_mono=(role == "screen"))
                 if pending:
@@ -207,7 +207,7 @@ class Layout:
                         blocks.append(cur)
                     prev, page_top = ln, False
                     continue
-                if in_opening and re.match(r"^(chapter|part|book|act|section)\s+[\w-]+$", t, re.I):
+                if in_opening and CHAPTER_LABEL.match(t):
                     mk = [r for r in runs if is_marker(r)]      # part of the section title
                     if mk:
                         blocks.append(Block("marker", runs=mk))
@@ -238,15 +238,15 @@ class Layout:
                         append_line(cur.runs, runs, self.dh)
                     prev, page_top = ln, False
                     continue
-                if role == "subheading":
-                    cur = Block("h2", runs=runs)
-                    blocks.append(cur)
-                    prev, page_top = ln, False
-                    continue
-                if in_opening and BYLINE.match(t) and len(t) < 70:
+                if in_opening and role != "body" and BYLINE.match(t) and len(t) < 70:
                     mk = [r for r in runs if is_marker(r)]
                     if mk:
                         blocks.append(Block("marker", runs=mk))
+                    prev, page_top = ln, False
+                    continue
+                if role == "subheading":
+                    cur = Block("h2", runs=runs)
+                    blocks.append(cur)
                     prev, page_top = ln, False
                     continue
                 if in_opening and WARN_HDR.match(t):
@@ -269,7 +269,7 @@ class Layout:
 
                 # ---- email headers can be set in any text style
                 if role in ("body", "blockquote", "email") and indent < 2 and EMAIL_HDR.match(t) and (
-                        t.startswith("From:") or (cur is not None and cur.kind == "email" and cur.in_header)):
+                        EMAIL_FROM.match(t) or (cur is not None and cur.kind == "email" and cur.in_header)):
                     role = "email_hdr"
 
                 if role == "ignore":
@@ -284,7 +284,7 @@ class Layout:
                     blocks.append(cur)
 
                 elif role == "email_hdr":
-                    if cur is None or cur.kind != "email" or t.startswith("From:"):
+                    if cur is None or cur.kind != "email" or EMAIL_FROM.match(t):
                         cur = Block("email", header=[], paras=[], in_header=True, last=None)
                         blocks.append(cur)
                     cur.header.append(list(runs))

@@ -132,7 +132,7 @@ def novel(path):
     return path
 
 
-def nonfiction(path):
+def nonfiction(path, drawn_bullets=False):
     d = Doc(420, 595, 50, 10.5, 14, font="helv")
     d.new_page(numbered=False)
     d.page.insert_text((60, 220), "Field Notes on Weather", fontsize=26, fontname="hebo")
@@ -163,7 +163,10 @@ def nonfiction(path):
     block_para(para_text(2, 3))
     for item in ("Watch the pressure.", "Write down the wind.", "Check the tide tables."):
         d.room()
-        d.page.insert_text((d.m + 6, d.y), "•", fontsize=10.5, fontname="helv")
+        if drawn_bullets:   # like a web browser: a small filled dot, no bullet character
+            d.page.draw_circle((d.m + 8, d.y - 3.5), 1.6, color=None, fill=(0, 0, 0))
+        else:
+            d.page.insert_text((d.m + 6, d.y), "•", fontsize=10.5, fontname="helv")
         d.page.insert_text((d.m + 18, d.y), item, fontsize=10.5, fontname="helv")
         d.y += d.lead
     d.y += 8

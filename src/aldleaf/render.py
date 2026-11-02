@@ -1,6 +1,7 @@
 """Blocks -> XHTML, plus the stylesheet."""
 import re
 
+from .i18n import EMAIL_FIELD_WORDS
 from .text import esc, render_runs, runs_text, strip_runs
 
 XHTML_HEAD = """<?xml version="1.0" encoding="UTF-8"?>
@@ -23,20 +24,30 @@ def xhtml(title, body, lang="en", epub_type=None, body_class=None):
 
 
 def _strip_bullet(runs, marker):
+    """Remove the printed bullet or number, even when the PDF stores it in pieces
+    ("1" and ". ")."""
     runs = strip_runs(runs)
+    text = "".join(t for t, st in runs if not isinstance(st, tuple))
+    m = re.match(r"^\s*" + re.escape(marker) + r"\s*", text)
+    if not m:
+        return runs
+    cut = m.end()
     for j, (t, st) in enumerate(runs):
+        if cut <= 0:
+            break
         if isinstance(st, tuple):
             continue
-        m = re.match(r"^\s*" + re.escape(marker) + r"\s*", t)
-        if m:
-            runs[j] = (t[m.end():], st)
-        break
+        take = min(cut, len(t))
+        runs[j] = (t[take:], st)
+        cut -= take
     return runs
 
 
-def blocks_to_html(blocks, figure_src, sid="s", scene_style="as_printed"):
+def blocks_to_html(blocks, figure_src, sid="s", scene_style="as_printed", lab=None):
     """figure_src(block) -> (href, alt, width%) for figure blocks.
     Footnotes are collected and placed at the end as pop-up notes."""
+    from .i18n import labels
+    lab = lab or labels("en")
     out, prev = [], None
     notes = [b for b in blocks if b.kind == "fnote"]
     blocks = [b for b in blocks if b.kind != "fnote"]
@@ -76,7 +87,7 @@ def blocks_to_html(blocks, figure_src, sid="s", scene_style="as_printed"):
             if scene_style == "ornament" or (glyph is None and not getattr(b, "space", False)):
                 out.append('<hr class="scene"/>')
             elif glyph:
-                out.append('<div class="scene-break" role="separator" aria-label="Scene break">'
+                out.append(f'<div class="scene-break" role="separator" aria-label="{lab["scene_break"]}">'
                            f'<p aria-hidden="true">{esc(glyph)}</p></div>')
             else:
                 out.append('<hr class="scene space"/>')
@@ -85,7 +96,7 @@ def blocks_to_html(blocks, figure_src, sid="s", scene_style="as_printed"):
         elif k == "note":
             out.append(f'<p class="note">{render_runs(strip_runs(b.runs))}</p>')
         elif k == "cw":
-            out.append('<div class="cw" role="doc-notice" aria-label="Content warnings">'
+            out.append(f'<div class="cw" role="doc-notice" aria-label="{lab["warnings"]}">'
                        f'<p class="cw-head">{render_runs(strip_runs(b.head))}</p>'
                        f'<p class="cw-list">{render_runs(strip_runs(b.runs))}</p></div>')
         elif k == "screen":
@@ -105,7 +116,7 @@ def blocks_to_html(blocks, figure_src, sid="s", scene_style="as_printed"):
                 parts.append('<div class="email-head">')
                 for h in b.header:
                     r = render_runs(strip_runs(h))
-                    r = re.sub(r"^((?:<span[^>]*></span>)*)(From|Sent|To|Cc|CC|Bcc|Subject|Date):", r"\1<b>\2:</b>", r)
+                    r = re.sub(r"^((?:<span[^>]*></span>)*)(" + EMAIL_FIELD_WORDS + r"):", r"\1<b>\2:</b>", r)
                     parts.append(f"<p>{r}</p>")
                 parts.append("</div>")
             for p in b.paras:
@@ -157,6 +168,8 @@ FONT_FACE = '@font-face {{ font-family: "{fam}"; font-weight: {w}; font-style: {
 
 CSS_BASE = r"""
 body { margin: 0; padding: 0; }
+:lang(zh) p, :lang(ja) p, :lang(ko) p { line-break: strict; }
+:lang(th) p { line-break: auto; }
 p { margin: 0; text-indent: 1.2em; line-height: 1.4; text-align: justify;
     -webkit-hyphens: auto; -epub-hyphens: auto; hyphens: auto; orphans: 2; widows: 2; }
 p.noindent { text-indent: 0; }

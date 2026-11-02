@@ -54,6 +54,14 @@ def test_nonfiction(tmp_path):
     letters_ok(report)
 
 
+def test_drawn_bullets_become_a_list(tmp_path):
+    def nonfiction_drawn(path):
+        return fixtures.nonfiction(path, drawn_bullets=True)
+    cfg, report, body = run(tmp_path, nonfiction_drawn)
+    assert '<ul class="list">' in body and "<li>Watch the pressure.</li>" in body
+    letters_ok(report)
+
+
 def test_poetry(tmp_path):
     cfg, report, body = run(tmp_path, fixtures.poetry)
     assert cfg["options"]["book_kind"] == "poetry"

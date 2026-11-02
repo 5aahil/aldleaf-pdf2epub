@@ -4,7 +4,9 @@ import re
 import statistics
 
 from .model import family, is_mono_font, is_sans_font
-from .text import is_folio, shift_label, words
+from .i18n import (BYLINE, BYLINE_CAPTURE, CHAPTER_LABEL, EMAIL_HDR_SPACE, detect_language,
+                   SECTION_KEYWORDS, script_of, text_layer_issues, unsupported_layout)
+from .text import TERMINAL, is_folio, shift_label, words
 
 ROLES = ("body", "heading", "subheading", "note", "screen", "chat", "chat_label", "email",
          "blockquote", "scene_break", "caption", "footnote", "dropcap", "verse", "ignore")
@@ -63,7 +65,7 @@ def detect_geometry(pages, body_key):
     for pg in pages:
         bl = [l for l in pg.lines if l.key == body_key]
         for a, b in zip(bl, bl[1:]):
-            g = round(b.y0 - a.y0, 1)
+            g = round(b.base - a.base, 1)
             if 0 < g < 60:
                 gaps.append(g)
     leading = _mode(gaps, 14.0)
@@ -79,12 +81,15 @@ def detect_geometry(pages, body_key):
     m_odd = m_odd if m_odd is not None else (m_even or 36)
     m_even = m_even if m_even is not None else m_odd
     indents = []
+    full = _pct([l.width for l in body], 0.98, 300.0)
     for pg in pages:
         m = m_odd if pg.n % 2 else m_even
         bl = [l for l in pg.lines if l.key == body_key]
         for a, l in zip(bl, bl[1:]):
-            # a first-line indent follows a line that ended a sentence; list items don't count
-            if not a.text.rstrip().endswith(('.', '!', '?', '"', '”', "'", '’', ':')):
+            # a first-line indent follows a line that ended a paragraph: a sentence end, or
+            # (for scripts without full stops, like Thai) a line stopping well short of the measure.
+            # List items don't count.
+            if not (a.text.rstrip().endswith(TERMINAL) or (a.width < full * 0.6 and l.y0 > a.y0 + 2)):
                 continue
             if re.match(r"^\s*([•·◦▪‣●○■□–-]|\(?\d{1,3}[.)])\s", l.text):
                 continue
@@ -200,7 +205,7 @@ def guess_roles(pages, body_key, geo=None):
                 inside_fill[l.key] += 1
             if t and set(t) <= SYMBOLS and len(t) <= 12 and any(c in t for c in "*#~•◆◇❖❧☙⁂§"):
                 symbol_only[l.key] += 1
-            if re.match(r"^(From|To|Subject|Sent|Date|Cc):\s", t):
+            if EMAIL_HDR_SPACE.match(t):
                 has_email_hdr[l.key] += 1
     body_font = body_key.split("@")[0]
     body_size = float(body_key.split("@")[1])
@@ -270,8 +275,11 @@ def detect_profile(pages, body_key, geo, sections):
     chapters = [s for s in sections if s["type"] == "chapter"]
     usable = (geo.get("page_width") or tw) - geo.get("margin_odd", 0) - geo.get("margin_even", 0)
     med = statistics.median([l.width for l in body]) if body else tw
-    if body and med < usable * 0.55 and not justified:
+    # Verse lines rarely run to the right margin; prose lines (ragged or justified) do.
+    to_margin = sum(1 for l in body if l.width >= usable * 0.9) / len(body) if body else 1
+    if body and (med < usable * 0.55 or (to_margin < 0.12 and med < usable * 0.85)):
         kind = "poetry"
+        justified = False
     elif bylines >= 3:
         kind = "anthology"
     else:
@@ -324,12 +332,13 @@ def detect_sections(pages, role_of, book_title_hint):
         if not hl:
             continue
         # a heading block = consecutive heading lines near the first one
-        hl = [l for l in hl if not re.match(r"^\s*by[:\s]", l.text.strip(), re.I)]
+        # a byline set in a heading style follows the title; the first heading line is the title
+        hl = hl[:1] + [l for l in hl[1:] if not BYLINE.match(l.text.strip())]
         if not hl:
             continue
         first = hl[0]
         above = [l for l in pg.lines if l.y1 <= first.y0 + 1 and first.y0 - l.y0 < 60
-                 and re.match(r"^(chapter|part|book|act|section)\s+[\w-]+$", l.text.strip(), re.I)]
+                 and CHAPTER_LABEL.match(l.text.strip())]
         # the title = lines of (about) the same size as the first heading line, close together
         block = [l for l in hl if l.y0 - first.y0 < 120 and abs(l.size - first.size) <= first.size * 0.3]
         title = _join_heading(above[-1:] + block)
@@ -341,10 +350,14 @@ def detect_sections(pages, role_of, book_title_hint):
     first_start = starts[0][0] if starts else len(pages) + 1
     for i, (n, title) in enumerate(starts):
         end = (starts[i + 1][0] - 1) if i + 1 < len(starts) else len(pages)
-        low = title.lower()
+        low = title.casefold()
         stype, etype, matter = "chapter", "chapter", "body"
         for kw, v in SECTION_TYPES.items():
             if low.startswith(kw):
+                stype, etype, matter = v
+                break
+        for kw, v in SECTION_KEYWORDS.items():   # other languages: whole words only ('tak' is Danish 'thanks')
+            if low == kw or (low.startswith(kw) and (" " in kw or "'" in kw or not low[len(kw)].isalnum())):
                 stype, etype, matter = v
                 break
         if book_title_hint and _similar(title, book_title_hint) and n <= 8:
@@ -422,18 +435,22 @@ def _shared_word(a, b):
 
 
 def _similar(a, b):
-    na = re.sub(r"[^a-z0-9]", "", a.lower())
-    nb = re.sub(r"[^a-z0-9]", "", b.lower())
+    na = re.sub(r"[\W_]", "", a.casefold())
+    nb = re.sub(r"[\W_]", "", b.casefold())
     return bool(na) and bool(nb) and (na.startswith(nb[:12]) or nb.startswith(na[:12]))
 
 
-def detect_bylines(pages, sections):
+def detect_bylines(pages, sections, role_of=None):
     for s in sections:
         if s["type"] != "chapter":
             continue
         for n in range(s["pages"][0], min(s["pages"][0] + 1, s["pages"][1]) + 1):
             for l in pages[n - 1].lines[:12]:
-                m = re.match(r"^\s*by[:\s]\s*(.+)$", l.text.strip(), re.I)
+                if role_of and role_of.get(l.key) == "body":
+                    continue      # running text or the title that happens to start with 'de', 'by', ...
+                if l.text.strip() and l.text.strip() in (s.get("title") or ""):
+                    continue
+                m = BYLINE_CAPTURE.match(l.text.strip())
                 if m and len(m.group(1)) < 60:
                     s["author"] = m.group(1).strip()
                     break
@@ -448,12 +465,12 @@ def detect_hyphenation(pages):
     ends = []
     for pg in pages:
         for a, b in zip(pg.lines, pg.lines[1:]):
-            m = re.search(r"([A-Za-z]{2,})-$", a.text.rstrip())
-            n = re.match(r"([a-z]{2,})", b.text.lstrip())
-            if m and n:
+            m = re.search(r"([^\W\d_]{2,})-$", a.text.rstrip())
+            n = re.match(r"([^\W\d_]{2,})", b.text.lstrip())
+            if m and n and n.group(1)[:1].islower():
                 ends.append((m.group(1) + n.group(1)).lower())
         for l in pg.lines:
-            for w in re.findall(r"[A-Za-z]+", l.text):
+            for w in re.findall(r"[^\W\d_]+", l.text):
                 vocab[w.lower()] += 1
     if not ends:
         return False
@@ -489,6 +506,18 @@ def analyze(doc, pages, stamp=None):
             chars[l.key] += len(l.text.strip())
     if not chars:
         raise ValueError("No text found. This looks like a scanned PDF; Aldleaf needs a text-based PDF.")
+    all_text = " ".join(l.text for pg in pages for l in pg.lines)
+    all_lines = [l for pg in pages for l in pg.lines]
+    # vertical CJK comes out as rows of single characters from neighbouring columns: 'ラ て た'
+    def _stacked(t):
+        toks = t.split()
+        return bool(toks) and all(len(x) == 1 and script_of(x) in ("Han", "Kana", "Hangul", "CJKPunct") for x in toks)
+    stacked = sum(1 for l in all_lines if _stacked(l.text))
+    total = sum(chars.values()) + sum(pg.vertical_chars for pg in pages)
+    vertical = total if (len(all_lines) > 40 and stacked > len(all_lines) * 0.5) else sum(pg.vertical_chars for pg in pages)
+    reason = unsupported_layout(all_text, vertical, total)
+    if reason:
+        raise ValueError(reason)
     body_key = chars.most_common(1)[0][0]
     geo = detect_geometry(pages, body_key)
     geo["body_size"] = float(body_key.split("@")[1])
@@ -496,6 +525,8 @@ def analyze(doc, pages, stamp=None):
     infer_labels(pages)
     styles = guess_roles(pages, body_key, geo)
     role_of = {s["style"]: s["role"] for s in styles}
+    lang, lang_how = detect_language(doc, all_text)
+    tl_bad, tl_examples = text_layer_issues("\n".join(pg.raw_text for pg in pages))
     meta_title = (doc.metadata or {}).get("title") or ""
     if FILENAME_TITLE.search(meta_title) or not meta_title.strip():
         meta_title = ""
@@ -512,7 +543,7 @@ def analyze(doc, pages, stamp=None):
             title_hint = max((c for c in cands if _similar(c, first)), key=len, default=first)
     pub, year, isbn = _copyright_facts(pages)
     sections = detect_sections(pages, role_of, title_hint)
-    detect_bylines(pages, sections)
+    detect_bylines(pages, sections, role_of)
     author = (doc.metadata or {}).get("author") or ""
     section_authors = [s.get("author") for s in sections if s.get("author")]
     if not author and section_authors:
@@ -526,13 +557,16 @@ def analyze(doc, pages, stamp=None):
             "subtitle": "",
             "authors": [author] if author else [],
             "publisher": pub,
-            "language": "en",
+            "language": lang,
             "date": year,
             "isbn": isbn,
             "description": "",
             "subjects": [],
         },
         "options": {
+            "language_detected": lang_how,   # pdf | text | default: check the language if default
+            "text_layer_damaged_words": tl_bad,   # >0: the PDF's hidden text differs from what you see
+            "text_layer_examples": tl_examples,
             "cover": None,
             "cover_page": 1,
             "stamp": False,
@@ -563,6 +597,12 @@ def summarize(config):
     out = []
     m = config["metadata"]
     out.append(f"Title: {m['title']}   Authors: {', '.join(m['authors']) or '(none found)'}")
+    how = {"pdf": "declared in the PDF", "text": "guessed from the text", "default": "not detected: set it in the config"}
+    out.append(f"Language: {m['language']} ({how.get(config['options'].get('language_detected'), 'from the config')})")
+    o = config['options']
+    if o.get('text_layer_damaged_words'):
+        out.append(f"Text layer: WARNING, {o['text_layer_damaged_words']} word(s) look damaged in the PDF (copying differs from what you see). "
+                   f"Re-export the PDF with embedded fonts. Examples: {'; '.join(o.get('text_layer_examples', [])[:3])}")
     g = config["geometry"]
     out.append(f"Layout: {g['page_width']}x{g['page_height']} pt, leading {g['leading']}, "
                f"paragraph gap {g['paragraph_gap']}, indent {g['indent']}, text width {g['text_width']}")

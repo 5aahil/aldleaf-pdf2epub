@@ -16,7 +16,9 @@ SANS_HINTS = ("sans", "helvetica", "arial", "figtree", "inter", "roboto", "lato"
 
 def base_font(name):
     """'ABCDEF+Baskervville-MediumItalic' -> 'Baskervville-MediumItalic'"""
-    return re.sub(r"^[A-Z]{6}\+", "", name or "")
+    n = re.sub(r"^[A-Z]{6}\+", "", name or "")
+    # browser exports store each run in its own unnamed Type 3 font: treat them as one font
+    return "Type3" if re.match(r"^Type3\b", n) else n
 
 
 def family(name):
@@ -41,7 +43,7 @@ def style_key(font, size):
 
 
 class Span:
-    __slots__ = ("t", "font", "size", "italic", "bold", "mono", "sup", "color", "key")
+    __slots__ = ("t", "font", "size", "italic", "bold", "mono", "sup", "color", "key", "oy")
 
     def __init__(self, s):
         self.t = norm(s["text"])
@@ -55,6 +57,7 @@ class Span:
         self.sup = bool(fl & 1)
         self.color = s["color"]
         self.key = style_key(self.font, self.size)
+        self.oy = s.get("origin", (0, 0))[1]   # baseline
 
 
 class Line:
@@ -63,6 +66,9 @@ class Line:
         self.x0, self.y0, self.x1, self.y1 = bbox
         self.spans = spans
         self.text = "".join(s.t for s in spans)
+        # Baseline: spacing is measured here, not at the top of the box, which moves
+        # with marks above the letters (Thai, Indian scripts, accented capitals).
+        self.base = max((sp.oy for sp in spans if not sp.sup), default=self.y1) or self.y1
         dom = max(spans, key=lambda s: len(s.t.strip()) or 0.01)
         self.font, self.size, self.color, self.key = dom.font, dom.size, dom.color, dom.key
         self.role = None       # assigned from the style map
@@ -98,11 +104,36 @@ class Page:
         self.label_inferred = False
         self.fills = []        # filled rectangles (chat bubbles, boxes): (rect, luminance)
         self.drawings = []     # raw drawings (for art)
+        self.raw_text = ""     # text exactly as stored in the PDF (for the text-layer check)
+        self.vertical_chars = 0
         self.images = []       # raster image rects
 
     @property
     def blank(self):
         return not self.lines and not self.drawings and not self.images
+
+
+def _drawn_bullets(lines, drawings):
+    """Some programs (web browsers among them) draw list bullets as small filled dots
+    instead of writing a bullet character. Give such lines a text bullet, so they are
+    read like any other list item."""
+    dots = []
+    for d in drawings:
+        r, f = d.get("rect"), d.get("fill")
+        if (f is None or r is None or not 1.5 <= r.width <= 7 or not 1.5 <= r.height <= 7
+                or abs(r.width - r.height) > 1 or d.get("color") not in (None, f)):
+            continue
+        if all(i[0] in ("c", "re", "qu") for i in d.get("items", [])):
+            dots.append(r)
+    for r in dots:
+        cy = (r.y0 + r.y1) / 2
+        for l in lines:
+            if (l.y0 <= cy <= l.y1 and 0 < l.x0 - r.x1 <= 20 and r.height < (l.y1 - l.y0) * 0.6
+                    and not l.text.lstrip().startswith(("•", "·", "◦", "▪", "‣", "●", "○", "■", "□"))):
+                l.spans[0].t = "• " + l.spans[0].t
+                l.text = "".join(s.t for s in l.spans)
+                l.x0 = r.x0
+                break
 
 
 def _merge_row_fragments(lines, max_gap=30):
@@ -111,13 +142,19 @@ def _merge_row_fragments(lines, max_gap=30):
     out = []
     for l in lines:
         p = out[-1] if out else None
-        if (p is not None and abs(p.y1 - l.y1) < 1.5 and 0 <= l.x0 - p.x1 < max_gap
-                and len(p.text.strip()) <= 4):
+        marker = (p is not None and abs(p.y1 - l.y1) < 1.5 and 0 <= l.x0 - p.x1 < max_gap
+                  and len(p.text.strip()) <= 4)
+        # A justified line in a script with few spaces (Thai) gets one very wide space,
+        # and the line is split there. The left piece ends in that space; a column of a
+        # two-column list doesn't.
+        stretched = (p is not None and not marker and abs(p.base - l.base) < 1 and p.key == l.key
+                     and p.text != p.text.rstrip() and 0 <= l.x0 - p.x1 < l.size * 3.5)
+        if marker or stretched:
             sp = p.spans + [Span.__new__(Span)] + l.spans
             filler = sp[len(p.spans)]
             for attr in Span.__slots__:
                 setattr(filler, attr, getattr(l.spans[0], attr))
-            filler.t = " "
+            filler.t = "" if stretched else " "
             merged = Line(p.page, (p.x0, min(p.y0, l.y0), l.x1, max(p.y1, l.y1)), sp)
             merged.font, merged.size, merged.color, merged.key = l.font, l.size, l.color, l.key
             merged.light = l.light
@@ -166,7 +203,10 @@ def load(pdf_path):
             if b["type"] != 0:
                 continue
             for l in b["lines"]:
-                if abs(l.get("dir", (1, 0))[1]) > 0.1:   # rotated text (spines, stamps)
+                d = l.get("dir", (1, 0))
+                if abs(d[1]) > 0.1:   # rotated text (spines, stamps) or vertical CJK
+                    if abs(d[0]) < 0.1:
+                        pg.vertical_chars += sum(len(s["text"].strip()) for s in l["spans"])
                     continue
                 sp = [Span(s) for s in l["spans"] if s["text"] != ""]
                 if not sp:
@@ -182,13 +222,15 @@ def load(pdf_path):
                     tiny_texts.setdefault(ln.text.strip(), set()).add(pi)
                     continue
                 lines.append(ln)
+                pg.raw_text += "".join(s["text"] for s in l["spans"]) + "\n"
         lines.sort(key=lambda l: (round(l.y0), l.x0))
-        lines = _merge_row_fragments(lines)
-        pg.lines = _column_order(lines, p.rect.width)
         try:
             dr = p.get_drawings()
         except Exception:
             dr = []
+        _drawn_bullets(lines, dr)
+        lines = _merge_row_fragments(lines)
+        pg.lines = _column_order(lines, p.rect.width)
         pg.drawings = dr
         for d in dr:
             f = d.get("fill")

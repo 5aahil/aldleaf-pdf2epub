@@ -144,6 +144,9 @@ def main(argv=None):
     except PermissionError as e:
         print(f"Error: {e}")
         return 3
+    except ValueError as e:      # scanned, right-to-left or vertical books: a clear message, no traceback
+        print(f"Error: {e}")
+        return 2
 
 
 if __name__ == "__main__":

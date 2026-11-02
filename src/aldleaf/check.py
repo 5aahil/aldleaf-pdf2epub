@@ -228,6 +228,17 @@ def check(epub_path, build_report=None, pdf_path=None, config=None, visual_dir=N
         lines.append(f"Kept manual line breaks: {st.get('forced_breaks', 0)}; blank-space scene breaks: "
                      f"{st.get('space_breaks', 0)}; joined stray paragraph returns: {st.get('joined_returns', 0)}; "
                      f"figures: {st.get('figures', 0)}")
+    if build_report and build_report.get("text_layer"):
+        tl = build_report["text_layer"]
+        if tl.get("damaged_words"):
+            problems += 1
+            lines.append(f"Text layer: !! {tl['damaged_words']} word(s) look damaged in the PDF itself "
+                         "(what you copy differs from what you see). Re-export the PDF from your writing or layout "
+                         "program with embedded fonts, then convert again. Examples: " + "; ".join(tl.get("examples", [])[:5]))
+        else:
+            lines.append("Text layer: OK")
+        if tl.get("repaired"):
+            lines.append(f"  repaired {tl['repaired']} doubled vowel sign(s) left by the PDF's ligatures")
     issues = lint_epub(epub_path)
     lines.append(f"Lints: {len(issues)} warning(s)")
     lines.extend("  - " + i for i in issues[:40])

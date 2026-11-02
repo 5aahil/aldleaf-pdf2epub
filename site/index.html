@@ -6,13 +6,17 @@
 <title>Aldleaf: PDF to EPUB converter (pdf2epub) for self-publishing authors</title>
 <meta name="description" content="Aldleaf is a free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors, writers and publishers. It reads the layout of a text-based PDF book and builds a clean, validated, accessible EPUB 3 for Kindle, Apple Books, Kobo and any ebook platform.">
 <link rel="canonical" href="https://5aahil.github.io/aldleaf-pdf2epub/">
+<link rel="alternate" hreflang="en" href="https://5aahil.github.io/aldleaf-pdf2epub/">
+<link rel="alternate" hreflang="de" href="https://5aahil.github.io/aldleaf-pdf2epub/de/">
+<link rel="alternate" hreflang="x-default" href="https://5aahil.github.io/aldleaf-pdf2epub/">
 <meta property="og:title" content="Aldleaf: every printed leaf, rewritten as EPUB">
 <meta property="og:url" content="https://5aahil.github.io/aldleaf-pdf2epub/">
 <meta property="og:type" content="website">
 <meta property="og:description" content="Free, open-source PDF to EPUB converter (pdf2epub) for self-publishing authors: text-based PDF books to clean, validated EPUB 3.">
 <meta property="og:image" content="https://5aahil.github.io/aldleaf-pdf2epub/assets/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml" media="(prefers-color-scheme: light)">
+<link rel="icon" href="assets/logo-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)">
 <style>
 :root {
   --bg: #fbf8f2; --surface: #ffffff; --ink: #1d1b18; --muted: #6d665b; --line: #e4ddd0;
@@ -37,8 +41,26 @@ a { color: var(--teal); }
 header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; text-decoration: none; color: var(--ink); }
 .brand img { width: 34px; height: 34px; }
+header.top { gap: 14px; }
+.right { display: flex; align-items: center; gap: 16px; }
+nav { display: flex; align-items: center; }
 nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 15px; }
 nav a:hover { color: var(--ink); }
+.nav-head { display: none; }
+.lang { display: inline-flex; padding: 3px; border-radius: 999px; flex-shrink: 0;
+        background: rgba(229, 229, 234, 0.9); border: 1px solid #8e8e93;
+        -webkit-backdrop-filter: blur(18px) saturate(180%); backdrop-filter: blur(18px) saturate(180%); }
+.lang a { padding: 5px 13px; border-radius: 999px; border: 1px solid transparent; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-decoration: none; color: #3a3a3c; }
+.lang a[aria-current="true"] { background: #ffffff; color: #1c1c1e; border-color: #6e6e73; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+.lang a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .lang { background: rgba(58, 58, 60, 0.9); border-color: #8e8e93; }
+  :root:not([data-theme="light"]) .lang a { color: #ebebf0; }
+  :root:not([data-theme="light"]) .lang a[aria-current="true"] { background: #f2f2f7; color: #1c1c1e; border-color: #f2f2f7; box-shadow: none; }
+}
+.menu-btn { display: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; padding: 0; align-items: center; justify-content: center; }
+.menu-btn svg { width: 22px; height: 22px; }
+.scrim { display: none; }
 .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 40px 0 30px; }
 .hero h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
 .hero p.lead { font-size: 19px; color: var(--muted); margin: 0 0 24px; }
@@ -82,9 +104,21 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
   .grid { grid-template-columns: 1fr; }
   nav a { margin-left: 12px; }
 }
+@media (max-width: 760px) {
+  .menu-btn { display: inline-flex; }
+  nav { position: fixed; top: 0; right: 0; bottom: 0; width: min(80vw, 300px); z-index: 30;
+        flex-direction: column; align-items: stretch; background: var(--surface); border-left: 1px solid var(--line);
+        padding: 18px 20px; transform: translateX(105%); visibility: hidden; transition: transform .22s ease, visibility .22s; box-shadow: -12px 0 30px rgba(0,0,0,.18); }
+  nav.open { transform: none; visibility: visible; }
+  nav a { margin: 0; padding: 13px 4px; font-size: 17px; color: var(--ink); border-bottom: 1px solid var(--line); }
+  .nav-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 18px; }
+  .nav-head .menu-btn { display: inline-flex; }
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 25; }
+  .scrim.open { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { nav { transition: none; } }
 @media (max-width: 480px) {
   .steps { grid-template-columns: 1fr; }
-  nav { display: none; }
 }
 </style>
 <script type="application/ld+json">
@@ -121,9 +155,17 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
 <body>
 <div class="wrap">
   <header class="top">
-    <a class="brand" href="#"><img src="assets/logo.svg" alt="">Aldleaf</a>
-    <nav><a href="#who">Who it's for</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#install">Install</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a></nav>
+    <a class="brand" href="#"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg"><img src="assets/logo.svg" alt=""></picture>Aldleaf</a>
+    <div class="right">
+      <nav id="site-nav" aria-label="Main">
+        <div class="nav-head"><span>Menu</span><button class="menu-btn" type="button" data-close aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+        <a href="#who">Who it's for</a><a href="#how">How it works</a><a href="#features">Features</a><a href="#languages">Languages</a><a href="#install">Install</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language"><a href="./" hreflang="en" lang="en" aria-current="true">EN</a><a href="de/" hreflang="de" lang="de">DE</a></div>
+      <button class="menu-btn" type="button" data-open aria-controls="site-nav" aria-expanded="false" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
   </header>
+  <div class="scrim" data-close></div>
 
   <div class="hero">
     <div>
@@ -193,6 +235,20 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
     </div>
   </section>
 
+  <section id="languages">
+    <h2>Books in your language</h2>
+    <p class="sub">Any language written horizontally, left to right. Aldleaf never translates your text. It detects the language and sets it in the EPUB, recognises chapter labels, bylines and content warnings in that language, and writes its own few labels in it too.</p>
+    <figure><img src="assets/languages.png" alt="Chapter openers in Hindi, Japanese, Korean, Russian, Bengali, Chinese, French and Tamil on eight phones." loading="lazy"><figcaption>Sample books with invented text, converted by Aldleaf.</figcaption></figure>
+    <div class="two" style="margin-top:18px">
+      <div>
+        <h3>The language is detected for you</h3>
+        <p class="sub">From the PDF, the script and the words. Readers, stores and screen readers need it for the right fonts, hyphenation and pronunciation. Chinese, Japanese and Thai lines are joined without adding spaces, and a damaged PDF text layer is repaired where safe or reported. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/docs/languages.md">27 languages tested word for word</a>, each as an anthology, a novel, nonfiction and poetry.</p>
+        <div class="note"><b>Planned next:</b> right-to-left books (Urdu, Arabic, Persian, Hebrew), vertical Chinese and Japanese text, and books in more than one language, such as bilingual editions, translations next to the original or a mythology retelling that quotes the original verses.</div>
+      </div>
+      <figure><img src="assets/language-detect.png" alt="A table of ten sample books with the detected language code, the contents heading Aldleaf wrote, and all checks passed." loading="lazy"></figure>
+    </div>
+  </section>
+
   <section>
     <div class="two">
       <div>
@@ -230,11 +286,13 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
     <div class="two">
       <div>
         <h2>Works with Claude</h2>
-        <p class="sub">The companion Claude skill <code>pdf-to-epub</code> runs the whole loop with you. It analyses the PDF, checks the proposed config against rendered pages, builds and checks the EPUB, and hands over the result with a device checklist.</p>
+        <p class="sub">The companion Claude skill <code>aldleaf</code> (shortcuts: <code>pdf2epub</code> and <code>pdf-to-epub</code>) runs the whole loop with you. It analyses the PDF, checks the proposed config against rendered pages, builds and checks the EPUB, and hands over the result with a device checklist.</p>
         <p class="sub"><b>Claude Code:</b></p>
 <pre>/plugin marketplace add 5aahil/aldleaf-pdf2epub
-/plugin install aldleaf@aldleaf</pre>
-        <p class="sub"><b>Claude app:</b> download <a href="pdf-to-epub-skill.zip">pdf-to-epub-skill.zip</a>, then go to Customize → Skills → + → Upload a skill. Code execution must be on. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/plugin/skills/pdf-to-epub/SKILL.md">Read the skill</a> first.</p>
+/plugin install aldleaf@aldleaf
+
+# then run /aldleaf:aldleaf, /aldleaf:pdf2epub or /aldleaf:pdf-to-epub</pre>
+        <p class="sub"><b>Claude app:</b> download <a href="aldleaf-skill.zip">aldleaf-skill.zip</a>, then go to Customize → Skills → + → Upload a skill. Code execution must be on. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/plugin/skills/aldleaf/SKILL.md">Read the skill</a> first.</p>
       </div>
       <div>
         <h2>Rights and privacy</h2>
@@ -245,7 +303,7 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
 
   <section>
     <h2>Not in scope (yet)</h2>
-    <p class="sub">Word, Pages and other editor files (export a PDF first), scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths.</p>
+    <p class="sub">Word, Pages and other editor files (export a PDF first), scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths, right-to-left scripts (Arabic, Hebrew, Persian, Urdu) and vertical Chinese or Japanese text (both detected and refused with a clear message, and planned next).</p>
   </section>
 
   <section id="ai-disclosure">
@@ -260,5 +318,19 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
 
   <footer>Aldleaf (earlier pdf2epub-kit) is named after the Aldine leaf ❦, the printer's leaf ornament of Aldus Manutius; the logo's leaf is the ❦ from Noto Sans Symbols 2 (SIL Open Font License). MIT licence · <a href="https://github.com/5aahil/aldleaf-pdf2epub">github.com/5aahil/aldleaf-pdf2epub</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Privacy policy</a> · Sample images use invented text. Apple Books, Kindle, Kobo and Claude are trademarks of their owners; this project is not affiliated with them.</footer>
 </div>
+<script>
+(function () {
+  var nav = document.getElementById('site-nav'), scrim = document.querySelector('.scrim'), openBtn = document.querySelector('[data-open]');
+  function set(open) {
+    nav.classList.toggle('open', open); scrim.classList.toggle('open', open);
+    openBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    setTimeout(function () { if (open) { var c = nav.querySelector('[data-close]'); if (c) c.focus(); } else { openBtn.focus(); } }, 60);
+  }
+  openBtn.addEventListener('click', function () { set(true); });
+  document.querySelectorAll('[data-close]').forEach(function (el) { el.addEventListener('click', function () { set(false); }); });
+  nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { if (nav.classList.contains('open')) set(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('open')) set(false); });
+})();
+</script>
 </body>
 </html>

@@ -11,14 +11,15 @@
   "license": "MIT",
   "keywords": [
     "pdf2epub",
-    "pdf-to-epub",
     "epub",
     "epub3",
     "pdf",
     "ebook",
     "self-publishing",
     "apple-books",
-    "kindle"
+    "kindle",
+    "pdf-to-epub",
+    "aldleaf"
   ],
   "termsOfServiceUrl": "https://github.com/5aahil/aldleaf-pdf2epub/blob/main/LICENSE",
   "privacyPolicyUrl": "https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md"

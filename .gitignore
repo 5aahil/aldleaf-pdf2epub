@@ -23,6 +23,7 @@ cover.png
 *.jpg
 !docs/**/*.png
 !site/assets/*.png
+!site/assets/de/*.png
 out/
 build/
 work/

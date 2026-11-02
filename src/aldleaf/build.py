@@ -10,6 +10,7 @@ from .analyze import infer_labels, split_running_heads
 from .art import adaptive_svg, drawings_in, is_monochrome
 from .layout import Layout, line_runs
 from .model import load, pymupdf
+from .i18n import byline_text, labels, page_label, text_layer_issues
 from .render import blocks_to_html, build_css, xhtml
 from .text import (Dehyphenator, append_line, esc, esc_attr, is_folio, pagebreak_html,
                    render_runs, strip_runs, words)
@@ -40,7 +41,7 @@ def _page_letters(pages, a, b):
 def _html_text(x):
     import html as _h
     body = x[x.index("<body"):] if "<body" in x else x
-    body = re.sub(r'<p class="byline">By ', '<p class="byline">By: ', body)
+    body = re.sub(r'<p class="byline">([^<\s]+) ', r'<p class="byline">\1: ', body)
     body = re.sub(r"<svg.*?</svg>", " ", body, flags=re.S)       # artwork titles are alt text, not book text
     return _h.unescape(re.sub(r"<[^>]+>", " ", body))
 
@@ -54,6 +55,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     doc, pages, detected_stamp = load(pdf_path)
     meta, opt, geo = config["metadata"], config["options"], config["geometry"]
     lang = meta.get("language") or "en"
+    lab = labels(lang)
     split_running_heads(pages, geo, geo.get("body_size"))
     infer_labels(pages)
     for k, v in (config.get("page_labels", {}).get("overrides") or {}).items():
@@ -70,6 +72,8 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     for pg in pages:
         for l in pg.lines:
             dh.learn(re.sub(r"\S+-$", "", l.text.rstrip()))
+    body = [l.text for pg in pages for l in pg.lines if l.role == "body" and len(l.text.strip()) > 8]
+    dh.line_end_spaces = bool(body) and sum(t[-1:].isspace() for t in body) / len(body) >= 0.3
 
     stats = {}
     layout = Layout(pages, config, dh, stats)
@@ -132,7 +136,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
         data, mt, cname = pix.tobytes("jpg", jpg_quality=88), "image/jpeg", "cover.jpg"
     images.append(("cover-image", f"images/{cname}", data, mt, "cover-image"))
     files.append(dict(id="cover", href="text/cover.xhtml", toc=None, xml=xhtml(
-        "Cover", f'<section class="cover" epub:type="cover"><img role="doc-cover" src="../images/{cname}" '
+        lab["cover"], f'<section class="cover" epub:type="cover"><img role="doc-cover" src="../images/{cname}" '
                  f'alt="Cover: {esc_attr(meta["title"])}"/></section>', lang)))
 
     sections = config["sections"]
@@ -193,9 +197,9 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
             stamp_text = stamp if stamp is not None else (detected_stamp if opt.get("stamp") else None)
             if stamp_text:
                 m = re.match(r"^(\S+@\S+)\s+(.+)$", stamp_text)
-                lic = f"Licensed to {m.group(1)} (purchased {m.group(2)})" if m else f"Licensed to {stamp_text}"
+                lic = lab["licensed"].format(who=m.group(1), when=m.group(2)) if m else lab["licensed_short"].format(who=stamp_text)
                 paras.append(f'<p class="licence">{esc(lic)}</p>')
-            x = xhtml("Copyright", '<section class="copyright" epub:type="copyright-page">' + "\n".join(paras) + "</section>", lang, "frontmatter")
+            x = xhtml(lab["copyright"], '<section class="copyright" epub:type="copyright-page">' + "\n".join(paras) + "</section>", lang, "frontmatter")
             files.append(dict(id=sid, href=href, toc=None, xml=x))
             collect(href, x)
             continue
@@ -208,9 +212,9 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
         blocks = layout.blocks(a, b, opening=True)
         head = f'<header class="section-head"><h1 id="{sid}-t">{esc(title)}</h1>'
         if author:
-            head += f'<p class="byline">By {esc(author)}</p>'
+            head += f'<p class="byline">{esc(byline_text(lab, author))}</p>'
         head += "</header>"
-        body_html = blocks_to_html(blocks, figure_src, sid, opt.get("scene_breaks", "as_printed"))
+        body_html = blocks_to_html(blocks, figure_src, sid, opt.get("scene_breaks", "as_printed"), lab)
         x = xhtml(title or "Section", f'<section epub:type="{etype}"{role_attr} aria-labelledby="{sid}-t">'
                   + head + "\n" + body_html + "\n</section>", lang, MATTER.get(s.get("matter", "body")),
                   body_class=("spaced" if opt.get("paragraph_style") == "spaced" else None))
@@ -225,17 +229,22 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
                                    "epub_letters": _letters(_html_text(x)) - _letters(title) * 0})
 
     # ---- contents page
+    if not any(f.get("toc") for f in files):
+        # no chapters found: the reading system still needs one table-of-contents entry
+        first = next((f for f in files if f["id"] not in ("cover",)), None)
+        if first is not None:
+            first["toc"] = meta["title"]
     lis = []
     for f in files:
         if f.get("toc"):
             au = f'<span class="author">{esc(f["author"])}</span>' if f.get("author") else ""
             lis.append(f'<li><a href="{os.path.basename(f["href"])}">{esc(f["toc"])}</a>{au}</li>')
     contents = [f for f in files if f["id"] == "contents"]
-    ctoc = ('<nav epub:type="toc" role="doc-toc" id="contents-page"><h1>Contents</h1>'
+    ctoc = ('<nav epub:type="toc" role="doc-toc" id="contents-page"><h1>' + esc(lab["contents"]) + '</h1>'
             '<ol class="contents">' + "".join(lis) + "</ol></nav>")
     if contents:
         for c in contents:
-            c["xml"] = xhtml("Contents", c.get("marks", "") + ctoc, lang, "frontmatter")
+            c["xml"] = xhtml(lab["contents"], c.get("marks", "") + ctoc, lang, "frontmatter")
         # keep only the first contents file
         seen = False
         new = []
@@ -249,31 +258,34 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     else:
         idx = next((i for i, f in enumerate(files) if f.get("kind") == "titlepage"), 0) + 1
         files.insert(idx, dict(id="contents", href="text/contents.xhtml", toc=None,
-                               xml=xhtml("Contents", ctoc, lang, "frontmatter")))
+                               xml=xhtml(lab["contents"], ctoc, lang, "frontmatter")))
     # rebuild page list in spine order
     pagelist, used_labels = [], set()
     for f in files:
         collect(f["href"], f["xml"])
+    if lab["page"] != "Page":
+        for f in files:
+            f["xml"] = re.sub(r'aria-label="Page ([^"]*)"', lambda m: 'aria-label="' + esc_attr(page_label(lab, m.group(1))) + '"', f["xml"])
     first_body_href = first_body_href or next((f["href"] for f in files if f.get("toc")), "text/contents.xhtml")
 
     # ---- nav / ncx / opf
     book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, "aldleaf:" + meta["title"] + "|" + ",".join(meta.get("authors") or [])))
     nav_toc = "".join(
-        f'<li><a href="{f["href"]}">{esc(f["toc"])}{(", by " + esc(f["author"])) if f.get("author") else ""}</a></li>'
+        f'<li><a href="{f["href"]}">{esc(f["toc"])}{(", " + esc(byline_text(lab, f['author']))) if f.get("author") else ""}</a></li>'
         for f in files if f.get("toc"))
     nav_pl = "".join(f'<li><a href="{h}">{esc(l)}</a></li>' for l, h in pagelist)
     titlepage_href = next((f["href"] for f in files if f.get("kind") == "titlepage"), None)
-    landmarks = ['<li><a epub:type="cover" href="text/cover.xhtml">Cover</a></li>']
+    landmarks = ['<li><a epub:type="cover" href="text/cover.xhtml">' + esc(lab["cover"]) + '</a></li>']
     if titlepage_href:
-        landmarks.append(f'<li><a epub:type="titlepage" href="{titlepage_href}">Title Page</a></li>')
-    landmarks.append('<li><a epub:type="toc" href="text/contents.xhtml">Contents</a></li>')
-    landmarks.append(f'<li><a epub:type="bodymatter" href="{first_body_href}">Start</a></li>')
+        landmarks.append(f'<li><a epub:type="titlepage" href="{titlepage_href}">{esc(lab["titlepage"])}</a></li>')
+    landmarks.append('<li><a epub:type="toc" href="text/contents.xhtml">' + esc(lab["contents"]) + '</a></li>')
+    landmarks.append(f'<li><a epub:type="bodymatter" href="{first_body_href}">{esc(lab["start"])}</a></li>')
     nav = f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="{lang}" xml:lang="{lang}">
 <head><meta charset="UTF-8"/><title>Navigation</title></head>
 <body>
-<nav epub:type="toc" role="doc-toc" id="toc"><h1>Contents</h1><ol>{nav_toc}</ol></nav>
+<nav epub:type="toc" role="doc-toc" id="toc"><h1>{esc(lab["contents"])}</h1><ol>{nav_toc}</ol></nav>
 <nav epub:type="landmarks" id="landmarks" hidden=""><h2>Landmarks</h2><ol>{"".join(landmarks)}</ol></nav>
 {f'<nav epub:type="page-list" role="doc-pagelist" id="page-list" hidden=""><h2>Pages</h2><ol>{nav_pl}</ol></nav>' if pagelist else ""}
 </body>
@@ -283,7 +295,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     for f in files:
         if f.get("toc"):
             n += 1
-            lbl = f["toc"] + (f", by {f['author']}" if f.get("author") else "")
+            lbl = f["toc"] + ((", " + byline_text(lab, f['author'])) if f.get("author") else "")
             nps.append(f'<navPoint id="np{n}" playOrder="{n}"><navLabel><text>{esc(lbl)}</text></navLabel><content src="{f["href"]}"/></navPoint>')
     pts = "".join(
         f'<pageTarget id="pt{k}" type="{"normal" if l.isdigit() else "front"}" value="{k + 1}" playOrder="{n + k + 1}">'
@@ -375,7 +387,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
 {chr(10).join(manifest)}
 </manifest>
 <spine toc="ncx">{spine}</spine>
-<guide><reference type="cover" title="Cover" href="text/cover.xhtml"/><reference type="toc" title="Contents" href="text/contents.xhtml"/></guide>
+<guide><reference type="cover" title="{esc_attr(lab["cover"])}" href="text/cover.xhtml"/><reference type="toc" title="{esc_attr(lab["contents"])}" href="text/contents.xhtml"/></guide>
 </package>
 """
     container = """<?xml version="1.0" encoding="UTF-8"?>
@@ -415,5 +427,10 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
         "fonts": len(font_items),
         "stats": stats,
         "stamp_detected": bool(detected_stamp),
+        "language": lang,
     })
+    raw = "\n".join(pg.raw_text for pg in pages)
+    bad, examples = text_layer_issues(raw)
+    from .i18n import _DOUBLE_SIGN
+    report["text_layer"] = {"damaged_words": bad, "examples": examples, "repaired": len(_DOUBLE_SIGN.findall(raw))}
     return out_path, report
