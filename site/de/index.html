@@ -39,11 +39,18 @@ html, body { margin: 0; background: var(--bg); color: var(--ink); }
 body { font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 a { color: var(--teal); }
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 16px; }
-header.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+header.top .bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 12px; padding-bottom: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; text-decoration: none; color: var(--ink); }
 .brand img { width: 34px; height: 34px; }
-header.top { gap: 14px; }
 .right { display: flex; align-items: center; gap: 16px; }
+/* The header stays at the top while you scroll. Its frosted background is a separate
+   layer: a blur on the header itself would trap the fixed sidebar menu inside it. */
+header.top { position: sticky; top: 0; z-index: 26; }
+header.top::before { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: color-mix(in srgb, var(--bg) 86%, transparent); border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: saturate(160%) blur(14px); backdrop-filter: saturate(160%) blur(14px); }
+section[id] { scroll-margin-top: 84px; }
+
 nav { display: flex; align-items: center; }
 nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-size: 15px; }
 nav a:hover { color: var(--ink); }
@@ -106,7 +113,7 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
   .grid, .grid.four { grid-template-columns: 1fr; }
   nav a { margin-left: 12px; }
 }
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .menu-btn { display: inline-flex; }
   nav { position: fixed; top: 0; right: 0; bottom: 0; width: min(80vw, 300px); z-index: 30;
         flex-direction: column; align-items: stretch; background: var(--surface); border-left: 1px solid var(--line);
@@ -156,18 +163,18 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
 </script>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
+<header class="top"><div class="wrap bar">
     <a class="brand" href="#"><picture><source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.svg"><img src="../assets/logo.svg" alt=""></picture>Aldleaf</a>
     <div class="right">
       <nav id="site-nav" aria-label="Hauptmenü">
         <div class="nav-head"><span>Menü</span><button class="menu-btn" type="button" data-close aria-label="Menü schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-        <a href="#who">Für wen</a><a href="#how">So funktioniert es</a><a href="#features">Funktionen</a><a href="#languages">Sprachen</a><a href="#install">Installation</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a>
+        <a href="#name">Zum Namen</a><a href="#who">Für wen</a><a href="#how">So funktioniert es</a><a href="#features">Funktionen</a><a href="#languages">Sprachen</a><a href="#install">Installation</a><a href="https://github.com/5aahil/aldleaf-pdf2epub">GitHub</a>
       </nav>
       <div class="lang" role="group" aria-label="Sprache"><a href="../" hreflang="en" lang="en">EN</a><a href="./" hreflang="de" lang="de" aria-current="true">DE</a></div>
       <button class="menu-btn" type="button" data-open aria-controls="site-nav" aria-expanded="false" aria-label="Menü öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
-  </header>
+  </div></header>
+<div class="wrap">
   <div class="scrim" data-close></div>
 
   <div class="hero">
