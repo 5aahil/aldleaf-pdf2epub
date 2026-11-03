@@ -271,7 +271,7 @@ def build(pdf_path, config, out_path, stamp=None, log=print):
     # ---- nav / ncx / opf
     book_id = "urn:uuid:" + str(uuid.uuid5(uuid.NAMESPACE_URL, "aldleaf:" + meta["title"] + "|" + ",".join(meta.get("authors") or [])))
     nav_toc = "".join(
-        f'<li><a href="{f["href"]}">{esc(f["toc"])}{(", " + esc(byline_text(lab, f['author']))) if f.get("author") else ""}</a></li>'
+        f'<li><a href="{f["href"]}">{esc(f["toc"])}{(", " + esc(byline_text(lab, f["author"]))) if f.get("author") else ""}</a></li>'
         for f in files if f.get("toc"))
     nav_pl = "".join(f'<li><a href="{h}">{esc(l)}</a></li>' for l, h in pagelist)
     titlepage_href = next((f["href"] for f in files if f.get("kind") == "titlepage"), None)
