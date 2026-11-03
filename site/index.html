@@ -78,7 +78,7 @@ pre { background: var(--code-bg); color: var(--code-ink); padding: 16px 18px; bo
 p code, li code, td code { background: var(--line); padding: 1px 6px; border-radius: 6px; font-size: 0.9em; }
 section { padding: 46px 0; border-top: 1px solid var(--line); }
 section h2 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 10px; letter-spacing: -0.01em; }
-section p.sub { color: var(--muted); margin: 0 0 26px; max-width: 760px; }
+section p.sub { color: var(--muted); margin: 0 0 26px; }
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
 .step b { display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #1d1b18; text-align: center; line-height: 28px; margin-bottom: 8px; }
@@ -88,6 +88,7 @@ figure { margin: 0; }
 figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); display: block; }
 figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid.four { grid-template-columns: repeat(2, 1fr); }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
 .card h3 { margin: 0 0 6px; font-size: 17px; }
 .card p { margin: 0; color: var(--muted); font-size: 15px; }
@@ -101,7 +102,7 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
 @media (max-width: 860px) {
   .hero, .two { grid-template-columns: 1fr; }
   .steps { grid-template-columns: 1fr 1fr; }
-  .grid { grid-template-columns: 1fr; }
+  .grid, .grid.four { grid-template-columns: 1fr; }
   nav a { margin-left: 12px; }
 }
 @media (max-width: 760px) {
@@ -181,13 +182,19 @@ footer { padding: 30px 0 50px; color: var(--muted); font-size: 14px; border-top:
     <img src="assets/hero.svg" alt="A fixed PDF page goes through analyze, confirm, build and check, and comes out as a reflowing ebook in light and dark themes.">
   </div>
 
+  <section id="name">
+    <h2>About the name</h2>
+    <p class="sub"><i>Aldleaf</i> (say "ALD-leaf"; earlier <b>pdf2epub-kit</b>) is named after the <b>Aldine leaf ❦</b>, the printer's leaf ornament of Aldus Manutius, the Renaissance printer who gave us the pocket book and italic type. Printers used it to mark a new section, much like the scene breaks Aldleaf keeps from your print edition. The leaf in the logo is the ❦ from <a href="https://github.com/notofonts/symbols">Noto Sans Symbols 2</a> (SIL Open Font License 1.1).</p>
+  </section>
+
   <section id="who">
     <h2>Who it's for</h2>
     <p class="sub">Authors, writers and publishers who self-publish, and who have a print-ready PDF but no proper ebook.</p>
-    <div class="grid">
-      <div class="card"><h3>Self-publishing authors</h3><p>You laid out your book for print (InDesign, Affinity, Word, Vellum, Scribus, LaTeX) and want an ebook without paying for a conversion or retyping it.</p></div>
-      <div class="card"><h3>Small and indie publishers</h3><p>Turn your back catalogue and new print files into consistent, accessible EPUBs.</p></div>
-      <div class="card"><h3>Anthologies and competitions</h3><p>Collections with many authors, bylines, dedications and content warnings.</p></div>
+    <div class="grid four">
+      <div class="card"><h3>Self-publishing authors and writers</h3><p>You laid out your book for print (InDesign, Affinity, Word, Vellum, Scribus, LaTeX) and want an ebook without paying for a conversion or retyping it.</p></div>
+      <div class="card"><h3>Small and independent publishers and presses</h3><p>Turn your back catalogue and new print files into consistent, accessible EPUBs.</p></div>
+      <div class="card"><h3>Anthology, magazine and competition organisers</h3><p>Collections with many authors, bylines, dedications and content warnings.</p></div>
+      <div class="card"><h3>Editors and book designers</h3><p>You hand over both the print files and the ebook.</p></div>
     </div>
     <div class="note" style="margin-top:18px"><b>Publish anywhere.</b> The output is a standard, validated EPUB 3, the format the main stores and distributors accept: Amazon KDP, Apple Books, Kobo Writing Life, Google Play Books, Barnes &amp; Noble Press, aggregators such as Draft2Digital, or direct sales from your own website or shop. Check each store's current upload requirements before you publish.</div>
     <p style="margin-top:16px;color:var(--muted);font-size:15px">Readers can also use it on their own DRM-free copy of a book, for their own devices. It is not for converting or sharing books you don't have the rights to.</p>
@@ -291,7 +298,10 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
 <pre>/plugin marketplace add 5aahil/aldleaf-pdf2epub
 /plugin install aldleaf@aldleaf
 
-# then run /aldleaf:aldleaf, /aldleaf:pdf2epub or /aldleaf:pdf-to-epub</pre>
+# then run one of:
+/aldleaf:aldleaf
+/aldleaf:pdf2epub
+/aldleaf:pdf-to-epub</pre>
         <p class="sub"><b>Claude app:</b> download <a href="aldleaf-skill.zip">aldleaf-skill.zip</a>, then go to Customize → Skills → + → Upload a skill. Code execution must be on. <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/plugin/skills/aldleaf/SKILL.md">Read the skill</a> first.</p>
       </div>
       <div>
@@ -303,7 +313,7 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
 
   <section>
     <h2>Not in scope (yet)</h2>
-    <p class="sub">Word, Pages and other editor files (export a PDF first), scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths, right-to-left scripts (Arabic, Hebrew, Persian, Urdu) and vertical Chinese or Japanese text (both detected and refused with a clear message, and planned next).</p>
+    <p class="sub">Word, Pages and other editor files (export a PDF first), scanned PDFs without a text layer (detected and refused), multi-column body text, large tables and maths, right-to-left scripts (Arabic, Hebrew, Persian, Urdu) and vertical Chinese or Japanese text (both detected and refused with a clear message, and planned next), and copy-protected PDFs (refused).</p>
   </section>
 
   <section id="ai-disclosure">
@@ -316,7 +326,7 @@ aldleaf convert book.pdf --cover cover.jpg</pre>
     </div>
   </section>
 
-  <footer>Aldleaf (earlier pdf2epub-kit) is named after the Aldine leaf ❦, the printer's leaf ornament of Aldus Manutius; the logo's leaf is the ❦ from Noto Sans Symbols 2 (SIL Open Font License). MIT licence · <a href="https://github.com/5aahil/aldleaf-pdf2epub">github.com/5aahil/aldleaf-pdf2epub</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Privacy policy</a> · Sample images use invented text. Apple Books, Kindle, Kobo and Claude are trademarks of their owners; this project is not affiliated with them.</footer>
+  <footer>Aldleaf (earlier pdf2epub-kit) is named after the Aldine leaf ❦, the printer's leaf ornament of Aldus Manutius; the logo's leaf is the ❦ from Noto Sans Symbols 2 (SIL Open Font License). MIT licence · <a href="https://github.com/5aahil/aldleaf-pdf2epub">github.com/5aahil/aldleaf-pdf2epub</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/PRIVACY.md">Privacy policy</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/CONTRIBUTING.md">Contributing</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/CODE_OF_CONDUCT.md">Code of conduct</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/SECURITY.md">Security</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/blob/main/ACCESSIBILITY.md">Accessibility</a> · <a href="https://github.com/5aahil/aldleaf-pdf2epub/issues/new/choose">Report a bug or idea</a> (never attach real books or personal data) · Sample images use invented text. Apple Books, Kindle, Kobo and Claude are trademarks of their owners; this project is not affiliated with them.</footer>
 </div>
 <script>
 (function () {
