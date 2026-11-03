@@ -18,7 +18,7 @@ All notable changes to this project are documented here. The format follows [Kee
 - German README (`README.de.md`).
 - New logo and plugin icon: the original page-to-book mark with an upright Aldine leaf, with a dark-theme version.
 - README and project page: a Languages section with two new images and the plan for the next versions (right-to-left books, vertical text, books in more than one language).
-- Project page: search-friendly title and description, structured data, sitemap; German version (`/de/`) with German images and an EN/DE switch; phone menu as a sidebar.
+- Project page: search-friendly title and description, structured data, sitemap; German version (`/de/`) with German images and an EN/DE switch; an About the name section; a header that stays at the top while scrolling, with a sidebar menu on phones and tablets.
 - The pdf-to-epub Claude skill now ships in this repo (`plugin/`), installable as a Claude Code plugin or as a zip for the Claude app.
 - Plugin icon, listing metadata and a privacy policy (`PRIVACY.md`); submitted to the Claude plugin directory.
 
